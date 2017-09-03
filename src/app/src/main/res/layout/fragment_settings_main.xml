@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.climbershangout.climbershangout.settings.SettingsMainFragment">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="6"
+        android:columnCount="2">
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/settings_theme"
+            android:layout_marginLeft="10dp"
+            android:layout_column="0"
+            android:layout_row="0"/>
+
+        <Spinner
+            android:id="@+id/settings_theme"
+            android:layout_width="@dimen/settings_notification_control_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"/>
+
+    </GridLayout>
+
+</FrameLayout>

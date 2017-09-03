@@ -1,0 +1,164 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:plainpie="http://schemas.android.com/apk/res-auto"
+    android:keepScreenOn="true"
+    tools:context="com.climbershangout.climbershangout.trainings.RunTrainingActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.climbershangout.climbershangout.views.SquareLinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_centerInParent="true">
+                <az.plainpie.PieView
+                    android:id="@+id/player_counter"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_centerInParent="true"
+                    plainpie:inner_pie_padding="100"
+                    plainpie:percentage_size="60"
+                    plainpie:inner_text_visibility="true"
+                    plainpie:inner_text=" "/>
+            </com.climbershangout.climbershangout.views.SquareLinearLayout>
+
+            <TextView
+                android:id="@+id/player_remaining_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="60px"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"/>
+
+            <TextView
+                android:id="@+id/player_board_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="60px"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.4">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/linearLayout">
+
+                <TextView
+                    android:id="@+id/player_training"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/player_training_size"
+                    android:text="Training"
+                    android:maxLines="1"
+                    android:ellipsize="end"/>
+
+                <RelativeLayout
+                    android:id="@+id/player_load_chart_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+
+                    <com.github.mikephil.charting.charts.HorizontalBarChart
+                        android:id="@+id/player_load_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/player_exercise"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/player_exercise_size"
+                    android:text="Exercise"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/player_set_repetition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/player_set_repetition_size"
+                    android:text="Exercise"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/player_exercise_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/player_exercise_description_size"
+                    android:text="Exercise"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout">
+
+                <Button
+                    android:id="@+id/btn_stop"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="STOP"/>
+
+                <Button
+                    android:id="@+id/btn_pause"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Pause"/>
+
+                <Button
+                    android:id="@+id/btn_skip_set"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="SKIP SET"/>
+
+                <Button
+                    android:id="@+id/btn_skip_ex"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="SKIP EX"/>
+
+                <Button
+                    android:id="@+id/btn_training_close"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="CLOSE"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

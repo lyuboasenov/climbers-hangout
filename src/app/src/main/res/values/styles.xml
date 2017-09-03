@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="LightTheme" parent="Theme.AppCompat.Light">
+        <item name="primaryColor">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor">?attr/primaryColor</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="DarkTheme" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="primaryColor">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor">?attr/primaryColor</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="LightGreenTheme" parent="@style/LightTheme">
+        <item name="android:statusBarColor">@color/light_green_statusbar_background</item>
+        <item name="primaryColor">@color/light_green_toolbar_background</item>
+    </style>
+
+    <style name="LightBlueTheme" parent="@style/LightTheme">
+        <item name="android:statusBarColor">@color/light_blue_statusbar_background</item>
+        <item name="primaryColor">@color/light_blue_toolbar_background</item>
+    </style>
+
+</resources>

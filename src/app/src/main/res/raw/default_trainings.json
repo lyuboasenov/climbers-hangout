@@ -1,0 +1,204 @@
+[
+  {
+    "id": "d4d9712e-b294-11e6-80f5-76304dec7eb7",
+    "name": "6x6x6/4",
+    "description": "Default training for Climber's Hangout app.",
+    "exercises" : [
+      {
+        "name": "Two hands hangs",
+        "description": "Two hands hangs on various holds.",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "6",
+        "setInfinite": "0"
+      }
+    ],
+    "preparationDuration" : "10"
+  },
+  {
+    "id": "ad9ce365-2a92-4a0e-9b79-8eb3e9e0f895",
+    "name": "2x4x6/4",
+    "description": "Default training for Climber's Hangout app.",
+    "exercises" : [
+      {
+        "name": "Two hands hangs",
+        "description": "Two hands hangs on various holds.",
+        "repetitionCount": "4",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "60",
+        "setCount": "2",
+        "setInfinite": "0"
+      }
+    ],
+    "preparationDuration" : "10"
+  },
+  {
+    "id": "5b150d5b-79f6-47ce-b71f-e61ea0fe9ad4",
+    "name": "6x6/6 loop",
+    "description": "Default training for Climber's Hangout app.",
+    "exercises" : [
+      {
+        "name": "Two hands hangs",
+        "description": "Two hands hangs on various holds.",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "0",
+        "setInfinite": "1"
+      }
+    ],
+    "preparationDuration" : "10"
+  },
+  {
+    "id": "c974795b-f830-49a6-8d80-754445a0e61c",
+    "name": "Lyubo's training",
+    "description": "Lyubo's training regime.",
+    "exercises" : [
+      {
+        "name": "One arm hangs",
+        "description": "A variation of Chris Paterson's workout.",
+        "repetitionCount": "2",
+        "workDuration": "10",
+        "restDuration": "5",
+        "pauseDuration": "120",
+        "setCount": "9",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Hang on rung #6",
+        "description": "Two hands hang on rung #6",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Hang on rung #5",
+        "description": "Two hands hang on rung #5",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Hang on rung #4",
+        "description": "Two hands hang on rung #4",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Three finger hang on rung #6",
+        "description": "Two hands, three finger hang on rung #6",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Three finger hang on rung #7",
+        "description": "Two hands, three finger hang on rung #7",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Two finger, first team hang on rung #8",
+        "description": "Two hands, two finger, first team hang on rung #8",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "Two finger, second team hang on rung #8",
+        "description": "Two hands, two finger, second team hang on rung #8",
+        "repetitionCount": "6",
+        "workDuration": "6",
+        "restDuration": "4",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F #6",
+        "description": "Two hands hang on rung #6. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F #5",
+        "description": "Two hands hang on rung #5. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F #4",
+        "description": "Two hands hang on rung #4. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F, three finger #6",
+        "description": "Two hands, three finger hang on rung #6. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F, three finger #7",
+        "description": "Two hands, three finger hang on rung #7. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      },
+      {
+        "name": "S90F, two finger, first team #8",
+        "description": "Two hands, two finger, first team hang on rung #7. First repetition is with strait arms, second is 90 degree lock and the third is full lock.",
+        "repetitionCount": "3",
+        "workDuration": "7",
+        "restDuration": "3",
+        "pauseDuration": "120",
+        "setCount": "1",
+        "setInfinite": "0"
+      }
+    ],
+    "preparationDuration" : "20"
+  }
+]
