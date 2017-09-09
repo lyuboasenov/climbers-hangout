@@ -62,4 +62,5 @@
     <string name="review_training_preparation">Preparation</string>
     <string name="add_training_discard">Discard Training</string>
     <string name="edit_exercise_loop">Loop until stopped</string>
+    <string name="debug">DEBUG</string>
 </resources>

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.climbershangout.climbershangout.dashboard.DashboardFragment;
+import com.climbershangout.climbershangout.debug.DebugFragment;
 import com.climbershangout.climbershangout.settings.SettingsFragment;
 import com.climbershangout.climbershangout.trainings.CounterFragment;
 import com.climbershangout.climbershangout.trainings.TrainingListFragment;
@@ -131,6 +132,10 @@ public class MainActivity extends BaseActivity {
         Fragment fragment = null;
         Class fragmentClass;
 
+        if (BuildConfig.DEBUG) {
+
+        }
+
         switch(menuItem.getItemId()) {
             case R.id.nav_dashboard_fragment:
                 fragmentClass = DashboardFragment.class;
@@ -140,6 +145,9 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.nav_counter_fragment:
                 fragmentClass = CounterFragment.class;
+                break;
+            case R.id.nav_debug_fragment:
+                fragmentClass = DebugFragment.class;
                 break;
             /*case R.id.nav_goals_fragment:
                 fragmentClass = GoalsFragment.class;
