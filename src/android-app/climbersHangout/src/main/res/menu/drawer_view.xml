@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/drawer_menu_group_feature"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_dashboard_fragment"
+            android:title="@string/dashboard"/>
+
+        <item
+            android:id="@+id/nav_trainings_fragment"
+            android:title="@string/trainings"/>
+
+        <item
+            android:id="@+id/nav_counter_fragment"
+            android:title="@string/counter"/>
+
+        <!--<item
+            android:id="@+id/nav_goals_fragment"
+            android:title="@string/goals"/>
+
+        <item
+            android:id="@+id/nav_friends_fragment"
+            android:title="@string/friends"/>-->
+
+    </group>
+
+    <group
+        android:id="@+id/drawer_menu_group_settings"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_settings_fragment"
+            android:title="@string/settings"/>
+
+    </group>
+
+    <group
+        android:id="@+id/drawer_menu_group_debug"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_debug_fragment"
+            android:title="@string/debug" />
+
+    </group>
+
+</menu>
