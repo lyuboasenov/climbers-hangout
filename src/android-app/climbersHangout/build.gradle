@@ -1,6 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'climbers-hangout'
+            keyPassword 'lybo@ClimbersHangout'
+            storeFile file('C:/Users/lyubo/keystore/android.jks')
+            storePassword 'lybo@android'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {

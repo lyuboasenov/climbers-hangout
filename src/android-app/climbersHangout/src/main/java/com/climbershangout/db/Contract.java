@@ -2,8 +2,6 @@ package com.climbershangout.db;
 
 import android.provider.BaseColumns;
 
-import java.util.HashMap;
-
 /**
  * Created by lyuboslav on 11/28/2016.
  */

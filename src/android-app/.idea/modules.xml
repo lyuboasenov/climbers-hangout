@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android-app.iml" filepath="$PROJECT_DIR$/android-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/climbersHangout/climbersHangout.iml" filepath="$PROJECT_DIR$/climbersHangout/climbersHangout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/openCVLibrary330/openCVLibrary330.iml" filepath="$PROJECT_DIR$/openCVLibrary330/openCVLibrary330.iml" />
     </modules>
   </component>
 </project>
