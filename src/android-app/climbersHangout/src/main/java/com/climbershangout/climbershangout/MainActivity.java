@@ -1,5 +1,7 @@
 package com.climbershangout.climbershangout;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import com.climbershangout.climbershangout.dashboard.DashboardFragment;
 import com.climbershangout.climbershangout.debug.DebugFragment;
 import com.climbershangout.climbershangout.settings.SettingsFragment;
+import com.climbershangout.climbershangout.settings.SettingsKeys;
 import com.climbershangout.climbershangout.trainings.CounterFragment;
 import com.climbershangout.climbershangout.trainings.TrainingListFragment;
 
@@ -32,6 +35,15 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //check for login
+        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+        String username = preferences.getString(SettingsKeys.User.USERNAME, "");
+        if(username.isEmpty()) {
+            //need login
+
+        }
+
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -45,7 +57,7 @@ public class MainActivity extends BaseActivity {
         setupDrawerContent(drawerView);
 
         drawerHeaderTitleView = (TextView) drawerView.getHeaderView(0).findViewById(R.id.header_title);
-        drawerHeaderTitleView.setText("lyuboslav");
+        drawerHeaderTitleView.setText(username);
 
         selectDrawerItem(drawerView.getMenu().getItem(0));
 

@@ -12,6 +12,12 @@ public class SettingsKeys {
         public static final String THEME = "settings_main_theme";
     }
 
+    public class User {
+        public static final String USERNAME = "settings_user_username";
+        public static final String EMAIL = "settings_user_email";
+        public static final String LOGIN_TYPE = "settings_user_login_type";
+    }
+
     public class Notifications {
         public static final String VIBRATE = "settings_notification_vibrate";
         public static final String PREP = "settings_notification_prep";
