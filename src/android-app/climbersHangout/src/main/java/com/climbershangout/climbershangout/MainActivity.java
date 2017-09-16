@@ -1,6 +1,7 @@
 package com.climbershangout.climbershangout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -22,6 +23,7 @@ import com.climbershangout.climbershangout.settings.SettingsFragment;
 import com.climbershangout.climbershangout.settings.SettingsKeys;
 import com.climbershangout.climbershangout.trainings.CounterFragment;
 import com.climbershangout.climbershangout.trainings.TrainingListFragment;
+import com.google.android.gms.auth.api.Auth;
 
 public class MainActivity extends BaseActivity {
 
@@ -32,6 +34,8 @@ public class MainActivity extends BaseActivity {
     private Menu menu;
     private TextView drawerHeaderTitleView;
 
+    private static final int RC_SIGN_IN = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +43,11 @@ public class MainActivity extends BaseActivity {
         //check for login
         SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
         String username = preferences.getString(SettingsKeys.User.USERNAME, "");
+
         if(username.isEmpty()) {
             //need login
-
+            Intent loginIntent = new Intent(this,LoginActivity.class);
+            startActivityForResult(loginIntent, RC_SIGN_IN);
         }
 
         setContentView(R.layout.activity_main);
@@ -126,6 +132,21 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(resultCode == RESULT_OK){
+            SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+            String username = preferences.getString(SettingsKeys.User.USERNAME, "");
+
+            drawerHeaderTitleView.setText(username);
+        } else {
+            //not login exit application
+            finish();
+            System.exit(0);
+        }
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
