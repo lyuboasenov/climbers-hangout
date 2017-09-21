@@ -353,34 +353,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         progressDialog.setMessage("Processing data...");
                         progressDialog.show();
 
-                        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                        final GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
 
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 // Get facebook data from login
-                                Bundle bFacebookData = getFacebookData(object);
+                                Bundle facebookData = getFacebookData(object);
+
+                                onSuccessfulLogin(response.getRequest().getAccessToken().getToken(),
+                                        facebookData.getString("name"),
+                                        facebookData.getString("email"), 2);
                             }
 
 
                         });
                         Bundle parameters = new Bundle();
-                        parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location"); // Parámetros que pedimos a facebook
+                        parameters.putString("fields", "id, name, first_name, last_name, email,gender, birthday, location"); // Parámetros que pedimos a facebook
                         request.setParameters(parameters);
                         request.executeAsync();
-
-
-                        String accessToken = loginResult.getAccessToken().getToken();
-
-                        Profile profile = Profile.getCurrentProfile();
-                        String firstName = profile.getFirstName());
-                        System.out.println(profile.getProfilePictureUri(20,20));
-                        System.out.println(profile.getLinkUri());
-
-                        String username = profile.getName();
-                        //String email = profile.;
-
-
-                        //onSuccessfulLogin(accessToken, username, email, 2);
                     }
 
                     @Override
@@ -418,6 +408,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             bundle.putString("idFacebook", id);
             if (object.has("first_name"))
                 bundle.putString("first_name", object.getString("first_name"));
+            if (object.has("name"))
+                bundle.putString("name", object.getString("name"));
             if (object.has("last_name"))
                 bundle.putString("last_name", object.getString("last_name"));
             if (object.has("email"))

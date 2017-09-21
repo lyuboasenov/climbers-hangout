@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -84,7 +85,7 @@ public class DashboardFragment extends Fragment implements DashboardActivityFrag
 
         int[] workouts = new int[] { thisWeekWorkouts, lastWeekWorkouts, thisMonthWorkouts, lastMonthWorkouts, thisYearWorkouts, lastYearWorkouts };
 
-        getViewPager().setAdapter(new DashboardActivitiesPagerAdapter(getFragmentManager(), workouts));
+        getViewPager().setAdapter(new DashboardActivitiesPagerAdapter(getChildFragmentManager(), workouts));
         getViewPagerTabs().setupWithViewPager(getViewPager());
 
         getTotalActivityView().setText(Integer.toString(totalActivityCount));
