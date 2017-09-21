@@ -3,6 +3,7 @@ package com.climbershangout.climbershangout;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,9 @@ import com.climbershangout.climbershangout.settings.SettingsKeys;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -45,6 +49,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +59,9 @@ import static android.Manifest.permission.READ_CONTACTS;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A login screen that offers login via email/password.
@@ -340,20 +349,92 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
+                        ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+                        progressDialog.setMessage("Processing data...");
+                        progressDialog.show();
+
+                        GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                // Get facebook data from login
+                                Bundle bFacebookData = getFacebookData(object);
+                            }
+
+
+                        });
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "id, first_name, last_name, email,gender, birthday, location"); // Parámetros que pedimos a facebook
+                        request.setParameters(parameters);
+                        request.executeAsync();
+
+
+                        String accessToken = loginResult.getAccessToken().getToken();
+
+                        Profile profile = Profile.getCurrentProfile();
+                        String firstName = profile.getFirstName());
+                        System.out.println(profile.getProfilePictureUri(20,20));
+                        System.out.println(profile.getLinkUri());
+
+                        String username = profile.getName();
+                        //String email = profile.;
+
+
+                        //onSuccessfulLogin(accessToken, username, email, 2);
                     }
 
                     @Override
                     public void onCancel() {
                         // App code
+                        onUnsuccessfulLogin();
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
+                        onUnsuccessfulLogin();
                     }
                 });
 
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+    }
+
+    private Bundle getFacebookData(JSONObject object) {
+
+        try {
+            Bundle bundle = new Bundle();
+            String id = object.getString("id");
+
+            try {
+                URL profile_pic = new URL("https://graph.facebook.com/" + id + "/picture?width=200&height=150");
+
+                bundle.putString("profile_pic", profile_pic.toString());
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            bundle.putString("idFacebook", id);
+            if (object.has("first_name"))
+                bundle.putString("first_name", object.getString("first_name"));
+            if (object.has("last_name"))
+                bundle.putString("last_name", object.getString("last_name"));
+            if (object.has("email"))
+                bundle.putString("email", object.getString("email"));
+            if (object.has("gender"))
+                bundle.putString("gender", object.getString("gender"));
+            if (object.has("birthday"))
+                bundle.putString("birthday", object.getString("birthday"));
+            if (object.has("location"))
+                bundle.putString("location", object.getJSONObject("location").getString("name"));
+
+            return bundle;
+        }
+        catch(JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void googleSignIn() {
@@ -393,20 +474,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 
-            SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-
-            preferences
-                    .edit()
-                    .putString(SettingsKeys.User.USERNAME, acct.getDisplayName())
-                    .putString(SettingsKeys.User.EMAIL, acct.getEmail())
-                    .putInt(SettingsKeys.User.LOGIN_TYPE, 1);
-
-            Intent returnIntent = new Intent();
-            setResult(RESULT_OK,returnIntent);
-            finish();
+            onSuccessfulLogin(acct.getIdToken(), acct.getDisplayName(), acct.getEmail(), 1);
         } else {
             // Signed out, show unauthenticated UI.
-            recreate();
+            onUnsuccessfulLogin();
         }
     }
 
@@ -421,6 +492,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+    private void onUnsuccessfulLogin() {
+        recreate();
+    }
+
+    private void onSuccessfulLogin(String token, String username, String email, int type) {
+        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+
+        preferences
+                .edit()
+                .putString(SettingsKeys.User.TOKEN, token)
+                .putString(SettingsKeys.User.USERNAME, username)
+                .putString(SettingsKeys.User.EMAIL, email)
+                .putInt(SettingsKeys.User.LOGIN_TYPE, type)
+                .commit();
+
+        Intent returnIntent = new Intent();
+        setResult(RESULT_OK,returnIntent);
+        finish();
+    }
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -464,6 +554,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
+                SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+
+                preferences
+                        .edit()
+                        .putString(SettingsKeys.User.USERNAME, mEmail)
+                        .putString(SettingsKeys.User.EMAIL, mEmail)
+                        .putInt(SettingsKeys.User.LOGIN_TYPE, 1)
+                        .commit();
+
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK,returnIntent);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

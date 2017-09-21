@@ -579,7 +579,7 @@ public class RunTrainingActivity extends BaseActivity {
     }
 
     private void setWorkingStatus() {
-        getPauseButton().setEnabled(workingStatus != workingStatus.Stopped);
+        getPauseButton().setEnabled(workingStatus != WorkingStatus.Stopped);
         getStopButton().setEnabled(workingStatus != WorkingStatus.Stopped);
         getSkipSetButton().setEnabled(workingStatus == WorkingStatus.Running);
         getSkipExButton().setEnabled(workingStatus == WorkingStatus.Running);

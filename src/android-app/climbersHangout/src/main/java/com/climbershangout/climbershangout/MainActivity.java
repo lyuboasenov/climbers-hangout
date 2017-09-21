@@ -163,7 +163,7 @@ public class MainActivity extends BaseActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
-        Class fragmentClass;
+        Class fragmentClass = DashboardFragment.class;
 
         if (BuildConfig.DEBUG) {
 
@@ -194,6 +194,9 @@ public class MainActivity extends BaseActivity {
             case R.id.action_settings:
                 fragmentClass = SettingsFragment.class;
                 break;
+            case R.id.nav_sign_out:
+                signOut();
+                return;
             default:
                 fragmentClass = DashboardFragment.class;
         }
@@ -208,6 +211,7 @@ public class MainActivity extends BaseActivity {
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        fragmentManager.executePendingTransactions();
 
         for(int i = 0; i < drawerView.getMenu().size(); i++){
             drawerView.getMenu().getItem(i).setChecked(false);
@@ -230,6 +234,18 @@ public class MainActivity extends BaseActivity {
 
         // Close the navigation drawer
         drawer.closeDrawers();
+    }
+
+    private void signOut() {
+        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+
+        preferences
+                .edit()
+                .remove(SettingsKeys.User.USERNAME)
+                .remove(SettingsKeys.User.EMAIL)
+                .remove(SettingsKeys.User.LOGIN_TYPE);
+
+        recreate();
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {

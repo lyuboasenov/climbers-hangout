@@ -13,6 +13,7 @@ public class SettingsKeys {
     }
 
     public class User {
+        public static final String TOKEN = "settings_user_token";
         public static final String USERNAME = "settings_user_username";
         public static final String EMAIL = "settings_user_email";
         public static final String LOGIN_TYPE = "settings_user_login_type";
