@@ -7,7 +7,7 @@
     <string name="activity_type_indoor">Indoor</string>
     <string name="activity_type_outdoor">Outdoor</string>
     <string name="dashboard">Dashboard</string>
-    <string name="trainings">Trainings</string>
+    <string name="trainings">Timed training</string>
     <string name="start">Start</string>
     <string name="training">Training</string>
     <string name="friends">Friends</string>

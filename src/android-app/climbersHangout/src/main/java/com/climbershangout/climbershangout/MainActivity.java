@@ -33,6 +33,7 @@ public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle drawerToggle;
     private Menu menu;
     private TextView drawerHeaderTitleView;
+    private int optionMenu = R.menu.main_menu;
 
     private static final int RC_SIGN_IN = 1001;
 
@@ -113,7 +114,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(optionMenu, menu);
         this.menu = menu;
         updateBoardMenuItem(BoardManager.getBoardManager().isBoardAttached());
         return true;
@@ -164,6 +165,7 @@ public class MainActivity extends BaseActivity {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass = DashboardFragment.class;
+        optionMenu = R.menu.main_menu;
 
         if (BuildConfig.DEBUG) {
 
@@ -175,6 +177,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.nav_trainings_fragment:
                 fragmentClass = TrainingListFragment.class;
+                optionMenu = R.menu.training_menu;
                 break;
             case R.id.nav_counter_fragment:
                 fragmentClass = CounterFragment.class;
@@ -190,6 +193,9 @@ public class MainActivity extends BaseActivity {
                 break;*/
             case R.id.nav_settings_fragment:
                 fragmentClass = SettingsFragment.class;
+                break;
+            case R.id.action_counter:
+                fragmentClass = CounterFragment.class;
                 break;
             case R.id.action_settings:
                 fragmentClass = SettingsFragment.class;
@@ -234,6 +240,9 @@ public class MainActivity extends BaseActivity {
 
         // Close the navigation drawer
         drawer.closeDrawers();
+
+        //Invalidate option menu so it can be updated.
+        invalidateOptionsMenu();
     }
 
     private void signOut() {
