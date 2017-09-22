@@ -3,4 +3,11 @@
     <declare-styleable name="Style">
         <attr name="primaryColor" format="color" />
     </declare-styleable>
+    <declare-styleable name="RelativeSizeLinearLayout">
+        <attr name="multiplier" format="float" />
+        <attr name="sourceDimension" format="enum">
+            <enum name="width" value="0"/>
+            <enum name="height" value="1"/>
+        </attr>
+    </declare-styleable>
 </resources>

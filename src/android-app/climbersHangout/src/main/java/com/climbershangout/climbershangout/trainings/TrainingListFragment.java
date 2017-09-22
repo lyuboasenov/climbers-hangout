@@ -6,14 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.climbershangout.climbershangout.R;
@@ -51,7 +50,7 @@ public class TrainingListFragment extends Fragment {
             /* map is already there, just return view as it is */
             e.printStackTrace();
         }
-        getRecyclerView().setLayoutManager(new LinearLayoutManager(this.getContext()));
+        getRecyclerView().setLayoutManager(new GridLayoutManager(this.getContext(), 2));
 
         addButtonListeners();
 
