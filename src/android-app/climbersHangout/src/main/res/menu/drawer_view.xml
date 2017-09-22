@@ -13,11 +13,11 @@
             android:id="@+id/nav_trainings_fragment"
             android:title="@string/trainings"/>
 
-        <item
+        <!--<item
             android:id="@+id/nav_counter_fragment"
             android:title="@string/counter"/>
 
-        <!--<item
+        <item
             android:id="@+id/nav_goals_fragment"
             android:title="@string/goals"/>
 

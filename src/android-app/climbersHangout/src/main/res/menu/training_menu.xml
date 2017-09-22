@@ -15,7 +15,7 @@
         android:id="@+id/action_counter"
         android:orderInCategory="50"
         android:title="@string/counter"
-        android:icon="@drawable/ic_av_timer"
+        android:icon="@drawable/ic_timer"
         app:showAsAction="always" />
 
     <item

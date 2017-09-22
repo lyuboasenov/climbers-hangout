@@ -70,6 +70,16 @@ public class TrainingListFragment extends Fragment {
             public void onItemClicked(Training training) {
                 showTrainingSummaryDialog(training);
             }
+
+            @Override
+            public void onItemInfo(Training training) {
+                showTrainingSummaryDialog(training);
+            }
+
+            @Override
+            public void onItemStarted(Training training) {
+                startTraining(training);
+            }
         }));
     }
 

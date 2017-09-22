@@ -173,13 +173,13 @@ public class MainActivity extends BaseActivity {
                 fragmentClass = TrainingListFragment.class;
                 optionMenu = R.menu.training_menu;
                 break;
-            case R.id.nav_counter_fragment:
-                fragmentClass = CounterFragment.class;
-                break;
             case R.id.nav_debug_fragment:
                 fragmentClass = DebugFragment.class;
                 break;
-            /*case R.id.nav_goals_fragment:
+            /*case R.id.nav_counter_fragment:
+                fragmentClass = CounterFragment.class;
+                break;
+            case R.id.nav_goals_fragment:
                 fragmentClass = GoalsFragment.class;
                 break;
             case R.id.nav_friends_fragment:

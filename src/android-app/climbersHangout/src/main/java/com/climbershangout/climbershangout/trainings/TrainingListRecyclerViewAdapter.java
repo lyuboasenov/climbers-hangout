@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.climbershangout.climbershangout.R;
@@ -53,8 +54,29 @@ public class TrainingListRecyclerViewAdapter extends RecyclerView.Adapter<Traini
             formattedTrainingDuration = context.getString(R.string.loop_training);
         }
 
-
         holder.durationView.setText(formattedTrainingDuration);
+
+        holder.infoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != listener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    listener.onItemInfo(holder.training);
+                }
+            }
+        });
+
+        holder.startView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != listener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    listener.onItemStarted(holder.training);
+                }
+            }
+        });
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +101,8 @@ public class TrainingListRecyclerViewAdapter extends RecyclerView.Adapter<Traini
         public final TextView nameView;
         public final TextView descriptionView;
         public final TextView durationView;
+        public final ImageView infoView;
+        public final ImageView startView;
 
         public Training training;
         public TrainingListRecyclerViewAdapter adapter;
@@ -91,7 +115,8 @@ public class TrainingListRecyclerViewAdapter extends RecyclerView.Adapter<Traini
             nameView = (TextView) view.findViewById(R.id.training_list_name);
             descriptionView = (TextView) view.findViewById(R.id.training_list_description);
             durationView = (TextView) view.findViewById(R.id.training_list_duration);
-
+            infoView = (ImageView) view.findViewById(R.id.training_list_info);
+            startView = (ImageView) view.findViewById(R.id.training_list_start);
             this.adapter = adapter;
             this.context = context;
         }
@@ -104,5 +129,7 @@ public class TrainingListRecyclerViewAdapter extends RecyclerView.Adapter<Traini
 
     public interface onTrainingListItemClicked{
         void onItemClicked(Training training);
+        void onItemInfo(Training training);
+        void onItemStarted(Training training);
     }
 }
