@@ -489,15 +489,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private void onSuccessfulLogin(String token, String username, String email, int type) {
-        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
 
-        preferences
-                .edit()
-                .putString(SettingsKeys.User.TOKEN, token)
-                .putString(SettingsKeys.User.USERNAME, username)
-                .putString(SettingsKeys.User.EMAIL, email)
-                .putInt(SettingsKeys.User.LOGIN_TYPE, type)
-                .commit();
+        User.getUser()
+                .setUsername(username)
+                .setEmail(email)
+                .setLoginType(type)
+                .setToken(token)
+                .save();
 
         Intent returnIntent = new Intent();
         setResult(RESULT_OK,returnIntent);
@@ -546,14 +544,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-
-                preferences
-                        .edit()
-                        .putString(SettingsKeys.User.USERNAME, mEmail)
-                        .putString(SettingsKeys.User.EMAIL, mEmail)
-                        .putInt(SettingsKeys.User.LOGIN_TYPE, 1)
-                        .commit();
+                User.getUser()
+                        .setUsername(mEmail)
+                        .setEmail(mEmail)
+                        .setLoginType(1)
+                        .save();
 
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK,returnIntent);

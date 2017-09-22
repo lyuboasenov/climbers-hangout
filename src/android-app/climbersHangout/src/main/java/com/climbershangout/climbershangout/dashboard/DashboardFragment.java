@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.climbershangout.climbershangout.R;
+import com.climbershangout.climbershangout.User;
 import com.climbershangout.climbershangout.helpers.DateHelper;
 import com.climbershangout.climbershangout.views.WrapContentViewPager;
 import com.climbershangout.climbershangout.workouts.ReviewWorkoutDialog;
@@ -54,6 +55,8 @@ public class DashboardFragment extends Fragment implements DashboardActivityFrag
         } catch (InflateException e) {
         /* map is already there, just return view as it is */
         }
+
+        ((TextView)view.findViewById(R.id.username)).setText(User.getUser().getUsername());
 
         return view;
     }

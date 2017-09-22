@@ -24,6 +24,18 @@ public class ClimbersHangoutApplication extends Application {
         return current;
     }
 
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -39,6 +51,7 @@ public class ClimbersHangoutApplication extends Application {
         });
 
         BoardManager.getBoardManager().initialize(this);
+        setUser(User.getUser(this));
     }
 
     public boolean isUIThread(){
@@ -75,4 +88,6 @@ public class ClimbersHangoutApplication extends Application {
 
         System.exit(1); // kill off the crashed app
     }
+
+
 }

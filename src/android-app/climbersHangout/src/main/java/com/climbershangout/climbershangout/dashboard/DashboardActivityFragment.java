@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import com.climbershangout.climbershangout.ClimbersHangoutApplication;
 import com.climbershangout.climbershangout.R;
+import com.climbershangout.climbershangout.User;
+
+import org.w3c.dom.Text;
 
 public class DashboardActivityFragment extends Fragment {
 

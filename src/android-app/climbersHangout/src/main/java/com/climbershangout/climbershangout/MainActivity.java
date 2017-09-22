@@ -42,10 +42,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         //check for login
-        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-        String username = preferences.getString(SettingsKeys.User.USERNAME, "");
-
-        if(username.isEmpty()) {
+        if(!User.getUser().isLoggedIn()) {
             //need login
             Intent loginIntent = new Intent(this,LoginActivity.class);
             startActivityForResult(loginIntent, RC_SIGN_IN);
@@ -64,7 +61,7 @@ public class MainActivity extends BaseActivity {
         setupDrawerContent(drawerView);
 
         drawerHeaderTitleView = (TextView) drawerView.getHeaderView(0).findViewById(R.id.header_title);
-        drawerHeaderTitleView.setText(username);
+        drawerHeaderTitleView.setText(User.getUser().getUsername());
 
         selectDrawerItem(drawerView.getMenu().getItem(0));
 
@@ -139,10 +136,7 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if(resultCode == RESULT_OK){
-            SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-            String username = preferences.getString(SettingsKeys.User.USERNAME, "");
-
-            drawerHeaderTitleView.setText(username);
+            drawerHeaderTitleView.setText(User.getUser().getUsername());
         } else {
             //not login exit application
             finish();
@@ -246,14 +240,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void signOut() {
-        SharedPreferences preferences = getSharedPreferences(SettingsKeys.SHARED_PREF_FILE, Context.MODE_PRIVATE);
-
-        preferences
-                .edit()
-                .remove(SettingsKeys.User.USERNAME)
-                .remove(SettingsKeys.User.EMAIL)
-                .remove(SettingsKeys.User.LOGIN_TYPE);
-
+        User.getUser().signOut();
         recreate();
     }
 
