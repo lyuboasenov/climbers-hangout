@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.climbershangout.climbershangout.trainings.TrainingListFragment">
+    android:layout_height="match_parent"
+    tools:context="com.climbershangout.climbershangout.climb.ClimbListFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/btn_add_training"
+        android:id="@+id/btn_add_climb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:backgroundTint="?attr/colorAccent"
@@ -20,9 +19,9 @@
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/training_list"
+        android:id="@+id/climb_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/fragment_training" />
+        tools:listitem="@layout/fragment_climb" />
 
-</RelativeLayout>
+</FrameLayout>

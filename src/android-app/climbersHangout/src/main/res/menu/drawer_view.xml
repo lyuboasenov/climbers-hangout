@@ -10,6 +10,10 @@
             android:title="@string/dashboard"/>
 
         <item
+            android:id="@+id/nav_climb_fragment"
+            android:title="@string/climb"/>
+
+        <item
             android:id="@+id/nav_trainings_fragment"
             android:title="@string/trainings"/>
 
