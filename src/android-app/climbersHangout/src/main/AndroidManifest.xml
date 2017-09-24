@@ -2,17 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.climbershangout.climbershangout">
 
-
-
     <uses-feature android:name="android.hardware.usb.host" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".ClimbersHangoutApplication"
@@ -44,21 +43,25 @@
         <activity android:name=".trainings.RunTrainingActivity" />
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"/>
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+            android:label="@string/title_activity_login" />
 
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
@@ -73,7 +76,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity
+            android:name=".climb.AddRouteActivity"
+            android:label="@string/title_activity_add_route"
+            android:theme="@style/LightTheme"></activity>
     </application>
-
 
 </manifest>

@@ -8,26 +8,29 @@
         <item
             android:id="@+id/nav_dashboard_fragment"
             android:title="@string/dashboard"/>
+    </group>
 
-        <item
-            android:id="@+id/nav_climb_fragment"
-            android:title="@string/climb"/>
+    <group
+        android:id="@+id/nav_climb_fragment"
+        android:checkableBehavior="single"
+        android:title="@string/climb">
+
+            <item
+                android:id="@+id/nav_route_list_fragment"
+                android:title="@string/action_route_list" />
+
+            <item
+                android:id="@+id/action_add_route"
+                android:title="@string/action_add_route" />
+
+    </group>
+
+    <group
+        android:checkableBehavior="single">
 
         <item
             android:id="@+id/nav_trainings_fragment"
             android:title="@string/trainings"/>
-
-        <!--<item
-            android:id="@+id/nav_counter_fragment"
-            android:title="@string/counter"/>
-
-        <item
-            android:id="@+id/nav_goals_fragment"
-            android:title="@string/goals"/>
-
-        <item
-            android:id="@+id/nav_friends_fragment"
-            android:title="@string/friends"/>-->
 
     </group>
 

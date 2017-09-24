@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.climbershangout.climbershangout.climb.AddRouteActivity;
 import com.climbershangout.climbershangout.climb.ClimbListFragment;
 import com.climbershangout.climbershangout.dashboard.DashboardFragment;
 import com.climbershangout.climbershangout.debug.DebugFragment;
@@ -25,6 +27,9 @@ import com.climbershangout.climbershangout.settings.SettingsKeys;
 import com.climbershangout.climbershangout.trainings.CounterFragment;
 import com.climbershangout.climbershangout.trainings.TrainingListFragment;
 import com.google.android.gms.auth.api.Auth;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class MainActivity extends BaseActivity {
 
@@ -35,6 +40,11 @@ public class MainActivity extends BaseActivity {
     private Menu menu;
     private TextView drawerHeaderTitleView;
     private int optionMenu = R.menu.main_menu;
+
+    private Dictionary<Integer, Class> navigationMap;
+    private Dictionary<Integer, Class> jumpToNavigationMap;
+    private Dictionary<Integer, Integer> optionMenuMap;
+    private Dictionary<Integer, CharSequence> navigationTitle;
 
     private static final int RC_SIGN_IN = 1001;
 
@@ -135,13 +145,17 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK){
-            drawerHeaderTitleView.setText(User.getUser().getUsername());
-        } else {
-            //not login exit application
-            finish();
-            System.exit(0);
+        if(requestCode == RC_SIGN_IN){
+            if (resultCode == RESULT_OK) {
+                drawerHeaderTitleView.setText(User.getUser().getUsername());
+            } else {
+                //not login exit application
+                finish();
+                System.exit(0);
+            }
+
         }
     }
 
@@ -157,58 +171,19 @@ public class MainActivity extends BaseActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
+        int navigationId = menuItem.getItemId();
+
+        if (navigationId == R.id.nav_sign_out) {
+            signOut();
+            return;
+        }
+
         // Create a new fragment and specify the fragment to show based on nav item clicked
+        Class fragmentClass = getNavigationFragmentClass(navigationId, DashboardFragment.class);
+
         Fragment fragment = null;
-        Class fragmentClass = DashboardFragment.class;
-        optionMenu = R.menu.main_menu;
-
-        if (BuildConfig.DEBUG) {
-
-        }
-
-        switch(menuItem.getItemId()) {
-            case R.id.nav_dashboard_fragment:
-                fragmentClass = DashboardFragment.class;
-                break;
-            case R.id.nav_climb_fragment:
-                fragmentClass = ClimbListFragment.class;
-                optionMenu = R.menu.training_menu;
-                break;
-            case R.id.nav_trainings_fragment:
-                fragmentClass = TrainingListFragment.class;
-                optionMenu = R.menu.training_menu;
-                break;
-            case R.id.nav_debug_fragment:
-                fragmentClass = DebugFragment.class;
-                break;
-            /*case R.id.nav_counter_fragment:
-                fragmentClass = CounterFragment.class;
-                break;
-            case R.id.nav_goals_fragment:
-                fragmentClass = GoalsFragment.class;
-                break;
-            case R.id.nav_friends_fragment:
-                fragmentClass = FriendsFragment.class;
-                break;*/
-            case R.id.nav_settings_fragment:
-                fragmentClass = SettingsFragment.class;
-                break;
-            case R.id.action_counter:
-                fragmentClass = CounterFragment.class;
-                break;
-            case R.id.action_settings:
-                fragmentClass = SettingsFragment.class;
-                break;
-            case R.id.nav_sign_out:
-                signOut();
-                return;
-            default:
-                fragmentClass = DashboardFragment.class;
-        }
-
         try {
-            if(null == fragment)
-                fragment = (Fragment) fragmentClass.newInstance();
+            fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -218,30 +193,94 @@ public class MainActivity extends BaseActivity {
         fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
         fragmentManager.executePendingTransactions();
 
-        for(int i = 0; i < drawerView.getMenu().size(); i++){
-            drawerView.getMenu().getItem(i).setChecked(false);
-        }
-
-        if(menuItem.getItemId() == R.id.action_settings) {
-            // Highlight the selected item has been done by NavigationView
-            drawerView.setCheckedItem(R.id.nav_settings_fragment);
-            MenuItem item = (MenuItem) drawerView.findViewById(R.id.nav_settings_fragment);
-            if(null != item)
-                item.setChecked(true);
-        } else {
-            // Highlight the selected item has been done by NavigationView
-            menuItem.setChecked(true);
-            drawerView.setCheckedItem(menuItem.getItemId());
-        }
+        markDrawerItemSelected(navigationId);
 
         // Set action bar title
-        setTitle(menuItem.getTitle());
+        setTitle(getNavigationTitle(navigationId, menuItem.getTitle()));
 
         // Close the navigation drawer
         drawer.closeDrawers();
 
         //Invalidate option menu so it can be updated.
+        optionMenu = getFragmentOptionMenu(navigationId, R.menu.main_menu);
         invalidateOptionsMenu();
+
+        Class jumpToActivity = getJumpToActivity(navigationId);
+        if (null != jumpToActivity) {
+            startActivityForResult(new Intent(this, jumpToActivity), AddRouteActivity.RC_ADD_ROUTE);
+        }
+    }
+
+    private void markDrawerItemSelected(int navigationId) {
+        uncheckMenu(drawerView.getMenu());
+
+        if(navigationId == R.id.action_settings) {
+            // Highlight the selected item has been done by NavigationView
+            navigationId = R.id.nav_settings_fragment;
+        }
+
+        drawerView.setCheckedItem(navigationId);
+        MenuItem item = (MenuItem) drawerView.findViewById(navigationId);
+        if(null != item)
+            item.setChecked(true);
+    }
+
+    private void uncheckMenu(Menu menu) {
+        for(int i = 0; i < menu.size(); i++){
+            MenuItem item = menu.getItem(i).setChecked(false);
+            if(item.hasSubMenu()){
+                uncheckMenu(item.getSubMenu());
+            }
+        }
+    }
+
+    private int getFragmentOptionMenu(int navigationId, int defaultOptionMenu) {
+        if (null == optionMenuMap) {
+            optionMenuMap = new Hashtable<>();
+            optionMenuMap.put(R.id.nav_trainings_fragment, R.menu.training_menu);
+        }
+
+        Integer optionMenuId = optionMenuMap.get(navigationId);
+
+        return optionMenuId == null ? defaultOptionMenu : optionMenuId;
+    }
+
+    private Class getNavigationFragmentClass(int navigationId, Class defaultNavigationFragment) {
+        if (navigationMap == null) {
+            navigationMap = new Hashtable<>();
+            navigationMap.put(R.id.nav_dashboard_fragment, DashboardFragment.class);
+            navigationMap.put(R.id.nav_route_list_fragment, ClimbListFragment.class);
+            navigationMap.put(R.id.nav_trainings_fragment, TrainingListFragment.class);
+            navigationMap.put(R.id.nav_debug_fragment, DebugFragment.class);
+            navigationMap.put(R.id.nav_settings_fragment, SettingsFragment.class);
+            navigationMap.put(R.id.action_add_route, ClimbListFragment.class);
+            navigationMap.put(R.id.action_counter, CounterFragment.class);
+            navigationMap.put(R.id.action_settings, SettingsFragment.class);
+        }
+
+        Class fragmentClass = navigationMap.get(navigationId);
+
+        return fragmentClass == null ? defaultNavigationFragment : fragmentClass;
+    }
+
+    private Class getJumpToActivity(int navigationId) {
+        if (jumpToNavigationMap == null) {
+            jumpToNavigationMap = new Hashtable<>();
+            jumpToNavigationMap.put(R.id.action_add_route, AddRouteActivity.class);
+        }
+
+        return jumpToNavigationMap.get(navigationId);
+    }
+
+    private CharSequence getNavigationTitle(int navigationId, CharSequence defaultTitle) {
+        if(navigationTitle == null){
+            navigationTitle = new Hashtable<>();
+            navigationTitle.put(R.id.action_add_route, getString(R.string.action_route_list));
+        }
+
+        CharSequence title = navigationTitle.get(navigationId);
+
+        return title == null ? defaultTitle : title;
     }
 
     private void signOut() {

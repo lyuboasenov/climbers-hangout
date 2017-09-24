@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.climbershangout.climbershangout.R;
 import com.climbershangout.climbershangout.StorageManager;
@@ -43,18 +45,12 @@ import javax.xml.xpath.XPathFactory;
 public class ClimbListFragment extends Fragment {
 
     //Members
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     private static View view;
-    private String fullImagePath;
 
 
     //Properties
-
     private RecyclerView getRecyclerView() { return (RecyclerView) view.findViewById(R.id.climb_list); }
     private ImageButton getAddTrainingButton(){ return (ImageButton) view.findViewById(R.id.btn_add_climb); }
-    public String getFullImagePath() {
-        return fullImagePath;
-    }
 
     //Constructor
     public ClimbListFragment() {
@@ -105,46 +101,24 @@ public class ClimbListFragment extends Fragment {
         }));
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //mImageView.setImageBitmap(imageBitmap);
-        }
-    }
-
     private void addButtonListeners() {
         getAddTrainingButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addClimb();
+                setRoute();
             }
         });
     }
 
-    private void addClimb() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = StorageManager.getStorageManager().createTempFile();
-                fullImagePath = photoFile.getAbsolutePath();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                ex.printStackTrace();
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getContext(),
-                        "com.climbershangout.climbershangout.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
+    private void setRoute() {
+        Intent addRouteActivity = new Intent(getActivity(), AddRouteActivity.class);
+        startActivityForResult(addRouteActivity, AddRouteActivity.RC_ADD_ROUTE);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AddRouteActivity.RC_ADD_ROUTE && resultCode == RESULT_OK) {
+            //RefreshRoutes
+        }
+    }
 }

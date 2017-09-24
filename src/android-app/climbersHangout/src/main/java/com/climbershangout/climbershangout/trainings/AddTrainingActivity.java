@@ -32,9 +32,20 @@ import java.util.UUID;
 
 public class AddTrainingActivity extends BaseActivity {
 
+    //Members
     List<Exercise> exerciseItems = new ArrayList<>();
     ViewExerciseRecyclerViewAdapter exercisesAdapter;
     private Menu menu;
+
+    //Property
+    public ImageButton getAddExerciseButton() { return (ImageButton) findViewById(R.id.add_training_btn_add_exercise); }
+
+    public EditText getNameView() { return (EditText) findViewById(R.id.add_training_name); }
+    public EditText getDescriptionView() { return (EditText) findViewById(R.id.add_training_description); }
+    public NumberPicker getPrepTimePicker() { return (NumberPicker) findViewById(R.id.add_training_prep_time); }
+    public RecyclerView getExerciseListView() { return (RecyclerView) findViewById(R.id.add_training_exercise_list); }
+
+    private Toolbar getToolbar() { return (Toolbar) findViewById(R.id.toolbar); }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,13 +180,4 @@ public class AddTrainingActivity extends BaseActivity {
     private void cancel() {
         finish();
     }
-
-    public ImageButton getAddExerciseButton() { return (ImageButton) findViewById(R.id.add_training_btn_add_exercise); }
-
-    public EditText getNameView() { return (EditText) findViewById(R.id.add_training_name); }
-    public EditText getDescriptionView() { return (EditText) findViewById(R.id.add_training_description); }
-    public NumberPicker getPrepTimePicker() { return (NumberPicker) findViewById(R.id.add_training_prep_time); }
-    public RecyclerView getExerciseListView() { return (RecyclerView) findViewById(R.id.add_training_exercise_list); }
-
-    private Toolbar getToolbar() { return (Toolbar) findViewById(R.id.toolbar); }
 }

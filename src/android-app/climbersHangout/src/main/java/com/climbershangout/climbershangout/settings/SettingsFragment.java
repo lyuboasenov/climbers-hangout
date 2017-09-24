@@ -23,13 +23,19 @@ import java.util.List;
  */
 public class SettingsFragment extends Fragment {
 
+    //Members
     private static View view;
 
+    //Properties
+    private ViewPager getViewPager() { return (ViewPager) view.findViewById(R.id.settings_viewpager); }
+    private TabLayout getTabLayout() { return (TabLayout) view.findViewById(R.id.settings_tabs); }
+
+    //Constructor
     public SettingsFragment() {
         // Required empty public constructor
     }
 
-
+    //Methods
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -88,7 +94,6 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private ViewPager getViewPager() { return (ViewPager) view.findViewById(R.id.settings_viewpager); }
-    private TabLayout getTabLayout() { return (TabLayout) view.findViewById(R.id.settings_tabs); }
+
 
 }

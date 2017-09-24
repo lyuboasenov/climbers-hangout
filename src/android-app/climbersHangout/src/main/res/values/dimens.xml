@@ -19,4 +19,5 @@
     <dimen name="number_picker_height">42dp</dimen>
     <dimen name="number_picker_text_size">20dp</dimen>
     <dimen name="settings_notification_control_width">250dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
 </resources>
