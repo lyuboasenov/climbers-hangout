@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -19,23 +20,32 @@ import java.io.StringWriter;
 
 public class ClimbersHangoutApplication extends Application {
 
+    //Members
     private static ClimbersHangoutApplication current;
+    private User user;
+    private StorageManager storageManager;
+
+    //Properties
     public static ClimbersHangoutApplication getCurrent() {
         return current;
     }
-
-    private User user;
-
     public User getUser() {
         return user;
     }
-
     public void setUser(User user) {
         this.user = user;
     }
 
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
 
 
+    //Methods
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,6 +62,7 @@ public class ClimbersHangoutApplication extends Application {
 
         BoardManager.getBoardManager().initialize(this);
         setUser(User.getUser(this));
+        setStorageManager(StorageManager.getStorageManager(this));
     }
 
     public boolean isUIThread(){
@@ -88,6 +99,4 @@ public class ClimbersHangoutApplication extends Application {
 
         System.exit(1); // kill off the crashed app
     }
-
-
 }

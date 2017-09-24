@@ -3,6 +3,7 @@ package com.climbershangout.climbershangout.climb;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
+import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -20,15 +21,24 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.climbershangout.climbershangout.R;
+import com.climbershangout.climbershangout.StorageManager;
 import com.climbershangout.db.DbHelper;
 import com.climbershangout.entities.Climb;
 
+import org.w3c.dom.NodeList;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 public class ClimbListFragment extends Fragment {
 
@@ -37,10 +47,14 @@ public class ClimbListFragment extends Fragment {
     private static View view;
     private String fullImagePath;
 
+
     //Properties
 
     private RecyclerView getRecyclerView() { return (RecyclerView) view.findViewById(R.id.climb_list); }
     private ImageButton getAddTrainingButton(){ return (ImageButton) view.findViewById(R.id.btn_add_climb); }
+    public String getFullImagePath() {
+        return fullImagePath;
+    }
 
     //Constructor
     public ClimbListFragment() {
@@ -116,7 +130,7 @@ public class ClimbListFragment extends Fragment {
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = createImageFile();
+                photoFile = StorageManager.getStorageManager().createTempFile();
                 fullImagePath = photoFile.getAbsolutePath();
             } catch (IOException ex) {
                 // Error occurred while creating the File
@@ -130,23 +144,7 @@ public class ClimbListFragment extends Fragment {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
-
         }
     }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        return image;
-    }
-
 
 }
