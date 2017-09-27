@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <paths xmlns:android="http://schemas.android.com/apk/res/android">
-        <files-path name="settings" path="settings/"/>
-        <external-files-path name="settings_ext" path="settings/"/>
         <files-path name="temp" path="temp/"/>
-        <external-files-path name="temp_ext" path="temp/"/>
-        <files-path name="climbs-schemas" path="climbs/schemas"/>
-        <external-files-path name="climbs_schemas_ext" path="climbs/schemas"/>
     </paths>
 </resources>

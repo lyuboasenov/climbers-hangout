@@ -1,12 +1,9 @@
 package com.climbershangout.climbershangout.climb;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
@@ -18,26 +15,33 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.climbershangout.climbershangout.R;
-import com.climbershangout.climbershangout.StorageManager;
+import com.climbershangout.climbershangout.StorageHelper;
+import com.climbershangout.climbershangout.common.Camera;
+import com.climbershangout.climbershangout.common.CameraListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-public class AddRouteActivity extends AppCompatActivity {
+public class AddRouteActivity extends AppCompatActivity implements Camera {
 
+    //Members
     private String tempImageFile;
     public static final int RC_IMAGE_CAPTURE = 1264;
     public static final int RC_ADD_ROUTE = 1397;
@@ -45,9 +49,10 @@ public class AddRouteActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private SectionsPagerAdapter sectionsPagerAdapter;
     private Menu menu;
+    private List<CameraListener> cameraListenerList;
 
     //Properties
-    private ViewPager getViewPager() { if (null == viewPager){ viewPager = (ViewPager) findViewById(R.id.add_route_viewpager); }return viewPager; }
+    private ViewPager getViewPager() { if (null == viewPager) { viewPager = (ViewPager) findViewById(R.id.add_route_viewpager); }return viewPager; }
     private TabLayout getTabLayout() { if (null == tabLayout) { tabLayout = (TabLayout) findViewById(R.id.add_route_tabs); } return tabLayout; }
     private Menu getMenu() { return menu; }
     private void setMenu(Menu menu) { this.menu = menu; }
@@ -63,7 +68,7 @@ public class AddRouteActivity extends AppCompatActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
 
         // Set up the ViewPager with the sections adapter.
         getViewPager().setAdapter(getSectionsPagerAdapter());
@@ -97,10 +102,10 @@ public class AddRouteActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap imageBitmap = BitmapFactory.decodeFile(tempImageFile, bmOptions);
-
-            ((ImageView)findViewById(R.id.iv_taken_image)).setImageBitmap(imageBitmap);
+            for (Iterator<CameraListener> i = cameraListenerList.iterator(); i.hasNext();) {
+                CameraListener item = i.next();
+                item.onCameraPhotoTaken(tempImageFile);
+            }
         }
     }
 
@@ -116,14 +121,15 @@ public class AddRouteActivity extends AppCompatActivity {
         }
     }
 
-    private void takePhoto(){
+    @Override
+    public void takePhoto(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
             // Create the File where the photo should go
             File photoFile = null;
             try {
-                photoFile = StorageManager.getStorageManager().createTempFile();
+                photoFile = StorageHelper.getStorageHelper().createTempFile();
                 tempImageFile = photoFile.getAbsolutePath();
             } catch (IOException ex) {
                 // Error occurred while creating the File
@@ -140,20 +146,58 @@ public class AddRouteActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void addListener(CameraListener listener) {
+        if(cameraListenerList == null) {
+            cameraListenerList = new ArrayList<>();
+        }
+        cameraListenerList.add(listener);
+    }
+
+    @Override
+    public void removeListener(CameraListener listener) {
+        if(cameraListenerList != null) {
+            cameraListenerList.remove(listener);
+        }
+    }
+
     private void cancel(){
         finish();
     }
 
     private void addRoute(){
-
         finish();
     }
 
     public static class SummaryFragment extends Fragment {
 
+        //Members
+        private EditText nameView;
+        private EditText descriptionView;
+        private CheckBox openFeetView;
+
+        //Properties
+        public EditText getNameView() {
+            if (nameView == null) { nameView = (EditText)getActivity().findViewById(R.id.add_route_name); }
+            return nameView;
+        }
+
+        public EditText getDescriptionView() {
+            if (descriptionView == null) { descriptionView = (EditText)getActivity().findViewById(R.id.add_route_descr); }
+            return descriptionView;
+        }
+
+        public CheckBox getOpenFeetView() {
+            if (openFeetView == null) { openFeetView = (CheckBox) getActivity().findViewById(R.id.add_route_open_feet); }
+            return openFeetView;
+        }
+
+        //Constructors
         public SummaryFragment() {
         }
 
+        //Methods
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
@@ -163,17 +207,124 @@ public class AddRouteActivity extends AppCompatActivity {
         }
     }
 
-    public static class DetailedFragment extends Fragment {
+    public static class DetailedFragment extends Fragment implements CameraListener {
 
-        public DetailedFragment() {
+        //Members
+        private ImageView overlayView;
+        private ImageView backgroundView;
+        private TextView lengthTextView;
+        private Camera camera;
+        private RouteSchemaCreator schemaCreator = new RouteSchemaCreator();;
+        private PointF lastTouched;
+        private boolean isPhotoTaken = false;
+
+
+        //Properties
+        public ImageView getOverlayView() {
+            if (overlayView == null) { overlayView = (ImageView) getActivity().findViewById(R.id.add_route_image_overlay); }
+            return overlayView;
         }
 
+        public ImageView getBackgroundView() {
+            if (backgroundView == null) { backgroundView = (ImageView) getActivity().findViewById(R.id.add_route_image_background); }
+            return backgroundView;
+        }
+
+        public TextView getLengthTextView() {
+            if (lengthTextView == null) { lengthTextView = (TextView) getActivity().findViewById(R.id.add_route_length); }
+            return lengthTextView;
+        }
+
+        public Camera getCamera() {
+            return camera;
+        }
+
+        public void setCamera(Camera camera) {
+            this.camera = camera;
+        }
+
+        public RouteSchemaCreator getSchemaCreator() {
+            return schemaCreator;
+        }
+
+        //Constructor
+        public DetailedFragment() {
+
+        }
+
+        public DetailedFragment(Camera camera) {
+            setCamera(camera);
+            getCamera().addListener(this);
+        }
+
+        //Methods
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_add_route_summary, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_add_route_details, container, false);
 
             return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getOverlayView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    imageViewClicked();
+                }
+            });
+            getOverlayView().setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    imageViewLongClicked();
+                    return false;
+                }
+            });
+            getOverlayView().setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    switch (motionEvent.getAction()){
+                        case android.view.MotionEvent.ACTION_DOWN:
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            break;
+                        case android.view.MotionEvent.ACTION_UP:
+                            break;
+                    }
+                    imageViewTouched(new PointF(
+                            motionEvent.getX(), motionEvent.getY()
+                    ));
+                    return false;
+                }
+            });
+        }
+
+        private void imageViewTouched(PointF point) {
+            this.lastTouched = point;
+        }
+
+        private void imageViewLongClicked() {
+            getSchemaCreator().removeHold(this.lastTouched);
+            getOverlayView().invalidate();
+        }
+
+        private void imageViewClicked() {
+            if(!isPhotoTaken) {
+                isPhotoTaken = true;
+                getCamera().takePhoto();
+            } else {
+                getSchemaCreator().addHold(this.lastTouched);
+                getOverlayView().invalidate();
+            }
+        }
+
+        @Override
+        public void onCameraPhotoTaken(String photoPath) {
+            getSchemaCreator().initialize(photoPath, new Size(getOverlayView().getWidth(), getOverlayView().getHeight()));
+            getOverlayView().setImageBitmap(getSchemaCreator().getOverlayBitmap());
+            getBackgroundView().setImageBitmap(getSchemaCreator().getBitmap());
         }
     }
 
@@ -183,9 +334,19 @@ public class AddRouteActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private Camera camera;
+
+        public Camera getCamera() {
+            return camera;
+        }
+
+        public void setCamera(Camera camera) {
+            this.camera = camera;
+        }
+
         //Constructor
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+        public SectionsPagerAdapter(FragmentManager fm, Camera camera) {
+            super(fm); setCamera(camera);
         }
 
         @Override
@@ -194,7 +355,7 @@ public class AddRouteActivity extends AppCompatActivity {
             Fragment selectedFragment;
             switch (position){
                 case 1:
-                    selectedFragment = new DetailedFragment();
+                    selectedFragment = new DetailedFragment(getCamera());
                     break;
                 default:
                     selectedFragment = new SummaryFragment();
@@ -221,3 +382,4 @@ public class AddRouteActivity extends AppCompatActivity {
         }
     }
 }
+

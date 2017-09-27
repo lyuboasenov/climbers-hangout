@@ -80,4 +80,7 @@
     <string name="add_route_discard">Discard</string>
     <string name="add_route_title">Add route</string>
     <string name="action_route_list">Route list</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_description">Description</string>
+    <string name="add_route_open_feet">Open feet</string>
 </resources>

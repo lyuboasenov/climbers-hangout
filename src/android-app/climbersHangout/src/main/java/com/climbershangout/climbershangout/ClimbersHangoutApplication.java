@@ -1,16 +1,11 @@
 package com.climbershangout.climbershangout;
 
 import android.app.Application;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -23,7 +18,7 @@ public class ClimbersHangoutApplication extends Application {
     //Members
     private static ClimbersHangoutApplication current;
     private User user;
-    private StorageManager storageManager;
+    private StorageHelper storageHelper;
 
     //Properties
     public static ClimbersHangoutApplication getCurrent() {
@@ -36,12 +31,12 @@ public class ClimbersHangoutApplication extends Application {
         this.user = user;
     }
 
-    public StorageManager getStorageManager() {
-        return storageManager;
+    public StorageHelper getStorageHelper() {
+        return storageHelper;
     }
 
-    public void setStorageManager(StorageManager storageManager) {
-        this.storageManager = storageManager;
+    public void setStorageHelper(StorageHelper storageHelper) {
+        this.storageHelper = storageHelper;
     }
 
 
@@ -62,7 +57,7 @@ public class ClimbersHangoutApplication extends Application {
 
         BoardManager.getBoardManager().initialize(this);
         setUser(User.getUser(this));
-        setStorageManager(StorageManager.getStorageManager(this));
+        setStorageHelper(StorageHelper.getStorageManager(this));
     }
 
     public boolean isUIThread(){

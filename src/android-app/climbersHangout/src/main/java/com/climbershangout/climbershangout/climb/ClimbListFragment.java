@@ -3,16 +3,9 @@ package com.climbershangout.climbershangout.climb;
 import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
-import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.InflateException;
@@ -20,27 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.climbershangout.climbershangout.R;
-import com.climbershangout.climbershangout.StorageManager;
 import com.climbershangout.db.DbHelper;
 import com.climbershangout.entities.Climb;
 
-import org.w3c.dom.NodeList;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 public class ClimbListFragment extends Fragment {
 
