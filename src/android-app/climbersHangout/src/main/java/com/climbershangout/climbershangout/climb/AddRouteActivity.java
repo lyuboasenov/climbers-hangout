@@ -1,6 +1,7 @@
 package com.climbershangout.climbershangout.climb;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -27,6 +28,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.climbershangout.climbershangout.R;
 import com.climbershangout.climbershangout.StorageHelper;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class AddRouteActivity extends AppCompatActivity implements Camera {
 
@@ -214,8 +217,7 @@ public class AddRouteActivity extends AppCompatActivity implements Camera {
         private ImageView backgroundView;
         private TextView lengthTextView;
         private Camera camera;
-        private RouteSchemaCreator schemaCreator = new RouteSchemaCreator();;
-        private PointF lastTouched;
+        private RouteSchemaCreator schemaCreator = new RouteSchemaCreator();
         private boolean isPhotoTaken = false;
 
 
@@ -275,48 +277,66 @@ public class AddRouteActivity extends AppCompatActivity implements Camera {
                     imageViewClicked();
                 }
             });
-            getOverlayView().setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    imageViewLongClicked();
-                    return false;
-                }
-            });
             getOverlayView().setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
-                    switch (motionEvent.getAction()){
-                        case android.view.MotionEvent.ACTION_DOWN:
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            break;
-                        case android.view.MotionEvent.ACTION_UP:
-                            break;
+                    boolean handled = false;
+                    if (isPhotoTaken) {
+                        PointF point = new PointF(motionEvent.getX(), motionEvent.getY());
+                        switch (motionEvent.getAction()) {
+                            case android.view.MotionEvent.ACTION_DOWN:
+                                imageViewDown(point);
+                                handled = true;
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                imageViewMove(point);
+                                handled = true;
+                                break;
+                            case android.view.MotionEvent.ACTION_UP:
+                                imageViewUp(point, motionEvent.getDownTime());
+                                handled = true;
+                                break;
+                        }
                     }
-                    imageViewTouched(new PointF(
-                            motionEvent.getX(), motionEvent.getY()
-                    ));
-                    return false;
+                    return handled;
                 }
             });
         }
 
-        private void imageViewTouched(PointF point) {
-            this.lastTouched = point;
+        Random rand = new Random(System.currentTimeMillis());
+        private void imageViewUp(PointF point, long duration) {
+
+            if(getSchemaCreator().finishAddHold(point, Color.BLUE, rand.nextInt(5))){
+                getOverlayView().setImageBitmap(getSchemaCreator().getOverlayBitmap());
+                getLengthTextView().setText("Length: " + getSchemaCreator().getLength());
+            }
         }
 
-        private void imageViewLongClicked() {
-            getSchemaCreator().removeHold(this.lastTouched);
-            getOverlayView().invalidate();
+        private void imageViewMove(PointF point) {
+            if(getSchemaCreator().addHoldProgress(point)){
+                getOverlayView().setImageBitmap(getSchemaCreator().getOverlayBitmap());
+            } else {
+                warnUserToClickInBounds();
+            }
+
+        }
+
+        private void warnUserToClickInBounds() {
+            Toast.makeText(getContext(), R.string.warning_click_in_bounds, Toast.LENGTH_SHORT).show();
+        }
+
+        private void imageViewDown(PointF point) {
+            if(getSchemaCreator().startAddHold(point)){
+                getOverlayView().setImageBitmap(getSchemaCreator().getOverlayBitmap());
+            } else {
+                warnUserToClickInBounds();
+            }
         }
 
         private void imageViewClicked() {
             if(!isPhotoTaken) {
                 isPhotoTaken = true;
                 getCamera().takePhoto();
-            } else {
-                getSchemaCreator().addHold(this.lastTouched);
-                getOverlayView().invalidate();
             }
         }
 

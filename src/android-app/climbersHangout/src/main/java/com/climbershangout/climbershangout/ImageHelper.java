@@ -116,4 +116,9 @@ public class ImageHelper {
 
         return imgIn;
     }
+
+    public static Bitmap duplicateBitmap(Bitmap source) {
+        //then create a copy of bitmap bmp1 into bmp2
+        return source.copy(source.getConfig(), true);
+    }
 }

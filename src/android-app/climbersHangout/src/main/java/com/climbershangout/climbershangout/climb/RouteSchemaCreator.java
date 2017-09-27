@@ -5,10 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.util.Size;
 
 
+import com.climbershangout.climbershangout.Common;
 import com.climbershangout.climbershangout.ImageHelper;
+import com.climbershangout.entities.Hold;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +27,18 @@ public class RouteSchemaCreator {
 
     private Bitmap bitmap;
     private Bitmap overlayBitmap;
+    private Bitmap tempOverlayBitmap;
     private Canvas canvas;
-    private List<PointF> holds = new ArrayList<>();
+    private Canvas tempCanvas;
+
+
+    private List<Hold> holds = new ArrayList<>();
     private Size viewSize;
     private Size bitmapSize;
     private Size bitmapFitSize;
     private float marginTop;
     private float marginLeft;
+    private PointF currentHoldLocation;
 
     //Properties
     public Bitmap getBitmap() {
@@ -41,7 +49,7 @@ public class RouteSchemaCreator {
     //    return overlayDrawable;
     //}
     public Bitmap getOverlayBitmap() {
-        return overlayBitmap;
+        return tempOverlayBitmap;
     }
 
     public int getLength(){
@@ -74,19 +82,17 @@ public class RouteSchemaCreator {
 
         overlayBitmap = Bitmap.createBitmap(
                 getBitmap().getWidth(), getBitmap().getHeight(), Bitmap.Config.ARGB_8888);
-
         canvas = new Canvas(overlayBitmap);
+
+        restoreOverlayState();
     }
 
-    public void addHold(PointF holdCoordinates){
-        if (verifyHoldInBounds(holdCoordinates)) {
-            PointF adjustedCoordinates = adjustCoordinates(holdCoordinates);
-            holds.add(adjustedCoordinates);
-            drawHold(adjustedCoordinates);
-        }
+    private void restoreOverlayState(){
+        tempOverlayBitmap = ImageHelper.duplicateBitmap(overlayBitmap);
+        tempCanvas = new Canvas(tempOverlayBitmap);
     }
 
-    private PointF adjustCoordinates(PointF coordinates){
+    private PointF normalizeCoordinates(PointF coordinates){
         return new PointF((coordinates.x - marginLeft) / bitmapFitSize.getWidth(), (coordinates.y - marginTop) / bitmapFitSize.getHeight());
     }
 
@@ -96,28 +102,120 @@ public class RouteSchemaCreator {
     }
 
     public void removeHold(PointF holdCoordinates){
-        PointF adjustedCoordinates = adjustCoordinates(holdCoordinates);
+        PointF adjustedCoordinates = normalizeCoordinates(holdCoordinates);
 
         overlayBitmap = Bitmap.createBitmap(
                 getBitmap().getWidth(), getBitmap().getHeight(), Bitmap.Config.ARGB_8888);
 
-        canvas = new Canvas(overlayBitmap);
+        //Todo: redraw holds
+//        for (PointF hold : holds) {
+//            //drawHold(hold);
+//        }
+    }
 
-        for (PointF hold : holds) {
-            drawHold(hold);
+    private void drawCircle(Canvas canvas, PointF normalizedCenter, float radius, int color, int strokeSize) {
+
+        int x = (int)(normalizedCenter.x * overlayBitmap.getWidth());
+        int y = (int)(normalizedCenter.y * overlayBitmap.getHeight());
+
+        Paint paint = new Paint();
+        paint.setStrokeWidth(strokeSize);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(color);
+
+        canvas.drawCircle(x, y, radius, paint);
+    }
+
+    private void drawStartingHold(Canvas canvas, PointF normalizedCenter, float radius, int color, int strokeSize) {
+        drawCircle(canvas, normalizedCenter, radius, color, strokeSize);
+        drawCircle(canvas, normalizedCenter, radius - 10, color, strokeSize);
+    }
+
+    private void drawHold(Canvas canvas, PointF normalizedCenter, float radius, int color, int strokeSize) {
+        drawCircle(canvas, normalizedCenter, radius, color, strokeSize);
+    }
+
+    private void drawFootHold(Canvas canvas, PointF normalizedCenter, float radius, int color, int strokeSize){
+        int x = (int)(normalizedCenter.x * overlayBitmap.getWidth());
+        int y = (int)(normalizedCenter.y * overlayBitmap.getHeight());
+
+        Paint paint = new Paint();
+        paint.setStrokeWidth(strokeSize);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(color);
+
+        RectF rect = new RectF(x - radius, y - radius / 2, x + radius, y + radius / 2);
+        canvas.drawArc(rect, 20, 140, false, paint);
+    }
+
+    private void drawFinishingHold(Canvas canvas, PointF normalizedCenter, float radius, int color, int strokeSize){
+        int x = (int)(normalizedCenter.x * overlayBitmap.getWidth());
+        int y = (int)(normalizedCenter.y * overlayBitmap.getHeight());
+
+        Paint paint = new Paint();
+        paint.setStrokeWidth(strokeSize);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(color);
+
+        RectF rect = new RectF(x - radius, y - radius / 2, x + radius, y + radius / 2);
+        canvas.drawRect(rect, paint);
+    }
+
+    private void drawHold(Canvas canvas, Hold hold){
+        switch (hold.getType()){
+            case Hold.START_HOLD:
+                drawStartingHold(canvas, hold.getCenter(), hold.getRadius(), hold.getColor(), Hold.getStrokeSize(hold.getType()));
+                break;
+            case Hold.HOLD:
+                drawHold(canvas, hold.getCenter(), hold.getRadius(), hold.getColor(), Hold.getStrokeSize(hold.getType()));
+                break;
+            case Hold.FINISH_HOLD:
+                drawFinishingHold(canvas, hold.getCenter(), hold.getRadius(), hold.getColor(), Hold.getStrokeSize(hold.getType()));
+                break;
+            case Hold.FOOT_HOLD:
+                drawFootHold(canvas, hold.getCenter(), hold.getRadius(), hold.getColor(), Hold.getStrokeSize(hold.getType()));
+                break;
         }
     }
 
-    private void drawHold(PointF holdCoordinates) {
+    private Hold getHold(PointF center, PointF radius, int color, int type){
+        float distance = Common.calculateDistance(center, radius, bitmapFitSize.getWidth(), bitmapFitSize.getHeight());
+        int calculatedRadius = (int)(distance > 20 ? distance : 20);
 
-        int x = (int)(holdCoordinates.x * overlayBitmap.getWidth());
-        int y = (int)(holdCoordinates.y * overlayBitmap.getHeight());
+        return new Hold(type, center, calculatedRadius, color);
+    }
 
-        Paint paint = new Paint();
-        paint.setStrokeWidth(STROKE_SIZE);
-        paint.setStyle(Paint.Style.STROKE);
+    public boolean finishAddHold(PointF point, int color, int type) {
+        boolean success = false;
+        if(currentHoldLocation != null){
+            Hold hold = getHold(currentHoldLocation, normalizeCoordinates(point), color, type);
+            holds.add(hold);
+            drawHold(canvas, hold);
+            restoreOverlayState();
+            currentHoldLocation = null;
+            success = true;
+        }
+        return success;
+    }
 
-        paint.setColor(Color.RED);
-        canvas.drawCircle(x, y, 20, paint);
+    public boolean addHoldProgress(PointF point) {
+        boolean success = false;
+        if(currentHoldLocation != null){
+            restoreOverlayState();
+            drawHold(tempCanvas, getHold(currentHoldLocation, normalizeCoordinates(point), Color.RED, Hold.HOLD));
+            success = true;
+        }
+        return success;
+    }
+
+    public boolean startAddHold(PointF point) {
+        boolean success = false;
+        if(verifyHoldInBounds(point)){
+            this.currentHoldLocation = normalizeCoordinates(point);
+            restoreOverlayState();
+            drawHold(tempCanvas, getHold(currentHoldLocation, currentHoldLocation, Color.RED, Hold.HOLD));
+            success = true;
+        }
+        return success;
     }
 }
