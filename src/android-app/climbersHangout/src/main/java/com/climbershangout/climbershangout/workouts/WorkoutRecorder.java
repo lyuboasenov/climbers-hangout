@@ -1,8 +1,7 @@
 package com.climbershangout.climbershangout.workouts;
 
-import android.util.Log;
-
 import com.climbershangout.climbershangout.BoardManager;
+import com.climbershangout.climbershangout.LogHelper;
 import com.climbershangout.entities.ITimerListener;
 import com.climbershangout.entities.Period;
 import com.climbershangout.entities.PeriodType;
@@ -14,7 +13,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by lyuboslav on 2/5/2017.
@@ -103,7 +101,7 @@ public class WorkoutRecorder implements BoardManager.IBoardCallback, ITimerListe
         currentWorkoutItem.setDuration(currentTime - currentWorkoutItemStart);
         currentWorkoutItem.setLoad(lastLoad);
 
-        Log.d("Workout.Item.Save", currentWorkoutItem.toString());
+        LogHelper.l("Workout.Item.Save", currentWorkoutItem.toString());
 
         recordings.add(currentWorkoutItem);
     }

@@ -6,6 +6,30 @@
     tools:context="com.climbershangout.climbershangout.climb.ClimbListFragment">
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_add_climb_from_gallery"
+        android:layout_width="@dimen/standard_45"
+        android:layout_height="@dimen/standard_45"
+        app:backgroundTint="?attr/colorAccent"
+        android:src="@drawable/ic_image"
+        android:elevation="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="21dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_add_climb_from_camera"
+        android:layout_width="@dimen/standard_45"
+        android:layout_height="@dimen/standard_45"
+        app:backgroundTint="?attr/colorAccent"
+        android:src="@drawable/ic_photo_camera"
+        android:elevation="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="21dp"/>
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_add_climb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,6 +40,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="15dp"/>
+
+
 
     <android.support.v7.widget.RecyclerView
         xmlns:android="http://schemas.android.com/apk/res/android"

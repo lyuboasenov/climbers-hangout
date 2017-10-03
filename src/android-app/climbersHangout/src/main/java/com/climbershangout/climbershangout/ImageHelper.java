@@ -2,12 +2,16 @@ package com.climbershangout.climbershangout;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.util.Size;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -18,6 +22,15 @@ import java.nio.channels.FileChannel;
 
 public class ImageHelper {
 
+    public static Size getBitmapSizeFromUri(Uri photoUri) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        decodeImageFromUri(photoUri, options);
+
+        return new Size(options.outWidth, options.outHeight);
+    }
+
     public static Size getBitmapSizeFromFile(String photoPath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -26,6 +39,50 @@ public class ImageHelper {
         return new Size(options.outWidth, options.outHeight);
     }
 
+    public static Size getBitmapSizeFromStream(InputStream stream) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(stream, null, options);
+
+        return new Size(options.outWidth, options.outHeight);
+    }
+
+    public static Bitmap decodeSampledBitmapFromUri(Uri photoUri, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        decodeImageFromUri(photoUri, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return decodeImageFromUri(photoUri, options);
+    }
+
+    private static Bitmap decodeImageFromUri(Uri photoUri, BitmapFactory.Options options){
+        ParcelFileDescriptor parcelFileDescriptor =
+                null;
+        try {
+            parcelFileDescriptor = ClimbersHangoutApplication.getCurrent()
+                    .getContentResolver().openFileDescriptor(photoUri, "r");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+        try {
+            parcelFileDescriptor.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return image;
+    }
 
     public static Bitmap decodeSampledBitmapFromFile(String photoPath, int reqWidth, int reqHeight) {
         // First decode with inJustDecodeBounds=true to check dimensions
@@ -38,6 +95,19 @@ public class ImageHelper {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(photoPath, options);
+    }
+
+    public static Bitmap decodeSampledBitmapFromStream(InputStream stream, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(stream, null, options);
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeStream(stream, null, options);
     }
 
     public static int calculateInSampleSize(

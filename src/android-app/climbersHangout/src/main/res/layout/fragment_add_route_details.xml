@@ -2,10 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.climbershangout.climbershangout.climb.AddRouteActivity$DetailedFragment"
+    tools:context="com.climbershangout.climbershangout.climb.AddRouteDetailedFragment"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <com.climbershangout.climbershangout.views.ZoomableRelativeLayout
+        android:id="@+id/add_route_schema_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
@@ -15,14 +16,112 @@
             android:layout_width="match_parent"
             android:adjustViewBounds="true" />
 
-        <ImageView android:id="@+id/add_route_image_overlay"
-            android:layout_height="match_parent"
+    </com.climbershangout.climbershangout.views.ZoomableRelativeLayout>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:src="@drawable/ic_photo_camera"
-            android:adjustViewBounds="true" />
+            android:layout_height="wrap_content"
+            android:background="#000000">
 
-    </RelativeLayout>
+            <ToggleButton
+                android:id="@+id/action_add_route_foot_hold"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_foot_hold"
+                android:backgroundTint="#FFFFFF"
+                android:textOff=""
+                android:textOn="" />
+            <ToggleButton
+                android:id="@+id/action_add_route_finishing_hold"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_finish_hold"
+                android:backgroundTint="#FFFFFF"
+                android:textOff=""
+                android:textOn="" />
+            <ToggleButton
+                android:id="@+id/action_add_route_start_hold"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_start_hold"
+                android:backgroundTint="#FFFFFF"
+                android:textOff=""
+                android:textOn="" />
+            <ToggleButton
+                android:id="@+id/action_add_route_hold"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_hold"
+                android:backgroundTint="#FFFFFF"
+                android:textOff=""
+                android:textOn="" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000">
+
+            <ToggleButton
+                android:id="@+id/action_add_route_color_white"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#FFFFFF"
+                android:textOff=""
+                />
+            <ToggleButton
+                android:id="@+id/action_add_route_color_green"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#00FF00"
+                android:textOff=""
+                />
+            <ToggleButton
+                android:id="@+id/action_add_route_color_blue"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#0000FF"
+                android:textOff=""
+                />
+            <ToggleButton
+                android:id="@+id/action_add_route_color_red"
+                android:layout_margin="@dimen/add_route_button_margin"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#FF0000"
+                android:textOff=""
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView android:id="@+id/add_route_length"
         android:layout_height="wrap_content"

@@ -84,4 +84,9 @@
     <string name="hint_description">Description</string>
     <string name="add_route_open_feet">Open feet</string>
     <string name="warning_click_in_bounds">Please click in image bounds to add hold.</string>
+    <string name="error_unable_to_create_request_image_intent">Unable to request an image.</string>
+    <string name="message">Info</string>
+    <string name="error">Error</string>
+    <string name="button_from_gallery">Gallery</string>
+    <string name="action_delete">Delete</string>
 </resources>
