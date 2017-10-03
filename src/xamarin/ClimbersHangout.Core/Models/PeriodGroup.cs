@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Threading;
+using System.Linq;
 
 namespace ClimbersHangout.Core.Models {
 
    using System.Collections.Generic;
 
-   public class PeriodGroup : IPeriod {
+   public class PeriodGroup : IPeriodGroup {
       public PeriodGroup() {
          periods = new List<IPeriod>();
          timeSpans = new List<Tuple<long, long>>();
@@ -55,7 +55,19 @@ namespace ClimbersHangout.Core.Models {
       }
 
       public PeriodType GetType(long time) {
-         throw new NotImplementedException();
+         var type = PeriodType.Undefined;
+         var timeSpan = timeSpans.FirstOrDefault(t => t.Item1 <= time && time <= t.Item2);
+         if (null != timeSpans) {
+            int index = timeSpans.IndexOf(timeSpan);
+            type = periods[index].GetType(time);
+         }
+         return type;
+      }
+
+      public IReadOnlyList<IPeriod> Periods {
+         get {
+            return (IReadOnlyList<IPeriod>)periods;
+         }
       }
    }
 }

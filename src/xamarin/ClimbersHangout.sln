@@ -5,9 +5,11 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimbersHangout.Core", "ClimbersHangout.Core\ClimbersHangout.Core.csproj", "{3C2F91B6-B6FC-4D89-A722-43EC98244D4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimbersHangout.UI.Common", "ClimbersHangout.UI.Common\ClimbersHangout.UI.Common.csproj", "{1FD5E029-7746-4BB2-8777-8F283AC75C63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimbersHangout.UI.Common", "ClimbersHangout.UI.Common\ClimbersHangout.UI.Common.csproj", "{1FD5E029-7746-4BB2-8777-8F283AC75C63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimbersHangout.Android", "ClimbersHangout.Android\ClimbersHangout.Android.csproj", "{F144112D-BAFF-43A7-9057-55310DD8D9AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimbersHangout.UI.Console", "ClimbersHangout.UI.Console\ClimbersHangout.UI.Console.csproj", "{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{F144112D-BAFF-43A7-9057-55310DD8D9AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F144112D-BAFF-43A7-9057-55310DD8D9AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F144112D-BAFF-43A7-9057-55310DD8D9AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
