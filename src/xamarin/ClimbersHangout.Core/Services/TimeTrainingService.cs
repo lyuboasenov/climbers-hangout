@@ -3,6 +3,7 @@
 namespace ClimbersHangout.Core.Services {
    public class TimeTrainingService {
       public static IPeriodGroup[] GetAllTrainings() {
+         #region Training 1
          var training1 = new PeriodGroup() {
             Name = "Training 1",
             Description = "Sample training 1",
@@ -26,6 +27,7 @@ namespace ClimbersHangout.Core.Services {
             Type = PeriodType.Rest
          });
          training1.Add(training11);
+         #endregion
 
          var training2 = new PeriodGroup() {
             Name = "Training 2",
@@ -83,11 +85,11 @@ namespace ClimbersHangout.Core.Services {
             IsInfiniteRepetition = false,
             RepeatCount = 6
          };
-         training2111.Add(new Period() {
+         training2121.Add(new Period() {
             Duration = 7000,
             Type = PeriodType.Work
          });
-         training2111.Add(new Period() {
+         training2121.Add(new Period() {
             Duration = 3000,
             Type = PeriodType.Rest,
             SkipOnLast = true
@@ -98,6 +100,7 @@ namespace ClimbersHangout.Core.Services {
             Type = PeriodType.Pause
          });
          training21.Add(training212);
+         training2.Add(training21);
 
          return new IPeriodGroup[] {
             training1, training2

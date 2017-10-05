@@ -11,7 +11,6 @@ namespace ClimbersHangout.Core {
       private int TIMER_INTERVAL = 50;
 
       private System.Threading.Timer timer;
-      private Stack<TimerState> runningStack;
       private long startTime;
       private long pauseStartTime;
       private long offset;
@@ -31,33 +30,30 @@ namespace ClimbersHangout.Core {
 
       public void Start() {
          if (!IsRunning) {
-            runningStack = new Stack<TimerState>();
-            runningStack.Push(new TimerState() { Period = Periods, Index = 0 });
             //-1 is specified to prevent timer from starting
             timer = new System.Threading.Timer(Tick, null, -1, TIMER_INTERVAL);
 
             IsRunning = true;
             IsPaused = false;
-            startTime = GetNowAsMills();
             offset = 0;
             passed = 0;
             pauseStartTime = 0;
+            startTime = GetNowAsMilliseconds();
 
             //starting the timer
-            timer.Change(0, TIMER_INTERVAL);
+            StartTimer();
          }
       }
 
       public void Stop() {
          if (IsRunning) {
             //stop timer and dispose
-            timer.Change(Timeout.Infinite, TIMER_INTERVAL);
+            StopTimer();
             timer.Dispose();
+            timer = null;
 
-            runningStack = null;
             IsRunning = false;
             IsPaused = false;
-            runningStack = null;
             startTime = 0;
             offset = 0;
             passed = 0;
@@ -68,26 +64,34 @@ namespace ClimbersHangout.Core {
       public void Pause() {
          if (IsRunning && !IsPaused) {
             IsPaused = true;
-            pauseStartTime = GetNowAsMills();
+            pauseStartTime = GetNowAsMilliseconds();
             //pause the timer too
-            timer.Change(Timeout.Infinite, TIMER_INTERVAL);
+            StopTimer();
          }
       }
 
       public void Resume() {
          if (IsRunning && IsPaused) {
-            offset += GetNowAsMills() - pauseStartTime;
+            offset += GetNowAsMilliseconds() - pauseStartTime;
             pauseStartTime = 0;
             //restart the timer
-            timer.Change(0, TIMER_INTERVAL);
+            StartTimer();
          }
+      }
+
+      private void StartTimer() {
+         timer.Change(0, TIMER_INTERVAL);
+      }
+
+      private void StopTimer() {
+         timer.Change(Timeout.Infinite, TIMER_INTERVAL);
       }
 
       private void Tick(object state) {
          //Stop timer
-         timer.Change(Timeout.Infinite, TIMER_INTERVAL);
+         StopTimer();
 
-         long now = GetNowAsMills();
+         long now = GetNowAsMilliseconds();
          long normalizedNow = now - startTime - offset;
          IPeriod currentPeriod = GetCurrentPeriod();
          if (passed + currentPeriod.Duration < normalizedNow) {
@@ -98,63 +102,27 @@ namespace ClimbersHangout.Core {
          OnTimerTick(new TimerEventArgs(currentPeriod));
 
          //restart timer
-         timer.Change(Timeout.Infinite, TIMER_INTERVAL);
+         StartTimer();
       }
 
       private IPeriod MoveNext() {
-         //Move up the stack
-         TimerState topState;
-
-         IPeriodGroup group;
-         int nextIndex;
-
-         do {
-            topState = runningStack.Pop();
-            topState = runningStack.Peek();
-
-            group = topState.Period as IPeriodGroup;
-            nextIndex = topState.Index + 1;
-
-         } while (nextIndex == group.Periods.Count - 1
-                  || (nextIndex == group.Periods.Count - 2
-                      && group.Periods[nextIndex].SkipOnLast));
-         //TODO: Handle group repetition
-
-
-         topState = runningStack.Peek();
-         topState.Index += 1;
-         IPeriod period = (topState as IPeriodGroup).Periods[topState.Index];
-         runningStack.Push(new TimerState() { Period = period, Index = 0 });
-
-         return GetCurrentPeriod();
+         throw new NotImplementedException();
       }
 
       private IPeriod GetCurrentPeriod() {
-         TimerState top = runningStack.Peek();
-         IPeriod currentPeriod = top.Period;
-         while (currentPeriod is IPeriodGroup) {
-            currentPeriod = (currentPeriod as IPeriodGroup).Periods[0];
-            runningStack.Push(new TimerState() { Period = currentPeriod, Index = 0 });
-         }
-         return currentPeriod;
+         throw new NotImplementedException();
       }
 
       protected virtual void OnTimerTick(TimerEventArgs e) {
          timerTick?.Invoke(this, e);
       }
 
-      private long GetNowAsMills() {
-         return DateTime.Now.Ticks * 10000;
-      }
-
       protected virtual void OnFinished() {
          finished?.Invoke(this, EventArgs.Empty);
       }
-   }
 
-   internal class TimerState {
-      public IPeriod Period { get; set; }
-      public int Index { get; set; }
-      public int RepetitionCount { get; set; }
+      private long GetNowAsMilliseconds() {
+         return DateTime.Now.Ticks / 10000;
+      }
    }
 }

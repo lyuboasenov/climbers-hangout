@@ -6,7 +6,6 @@ namespace ClimbersHangout.Core.Models {
    public interface IPeriod {
       long Duration { get; }
       bool SkipOnLast { get; }
-
-      PeriodType GetType(long time);
+      PeriodType Type { get; }
    }
 }

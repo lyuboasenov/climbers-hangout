@@ -20,6 +20,7 @@ namespace ClimbersHangout.Core.Models {
       public bool IsInfiniteRepetition { get; set; }
       public long Duration { get; set; }
       public bool SkipOnLast { get; set; }
+      public PeriodType Type { get { return PeriodType.Undefined; } }
 
       public void Add(IPeriod period) {
          periods.Add(period);
@@ -52,16 +53,6 @@ namespace ClimbersHangout.Core.Models {
             timeSpans.Add(new Tuple<long, long>(start, start + period.Duration));
             start += Duration;
          }
-      }
-
-      public PeriodType GetType(long time) {
-         var type = PeriodType.Undefined;
-         var timeSpan = timeSpans.FirstOrDefault(t => t.Item1 <= time && time <= t.Item2);
-         if (null != timeSpans) {
-            int index = timeSpans.IndexOf(timeSpan);
-            type = periods[index].GetType(time);
-         }
-         return type;
       }
 
       public IReadOnlyList<IPeriod> Periods {

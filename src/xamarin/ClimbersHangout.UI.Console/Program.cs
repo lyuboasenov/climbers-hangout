@@ -7,18 +7,31 @@ namespace ClimbersHangout.UI.Console {
    class Program {
       static void Main(string[] args) {
          var trainings = TimeTrainingService.GetAllTrainings();
-         Timer timer = new Timer(trainings[1]);
-         timer.timerTick += Timer_timerTick;
-         timer.Start();
 
-         while (System.Console.ReadKey().KeyChar != 'q') { }
+         Training training = new Training(trainings[1]);
+
+         foreach (var period in training) {
+            System.Console.WriteLine("{0} {1}", period.Type, period.Duration);
+            System.Console.WriteLine("");
+
+            if (System.Console.ReadKey().KeyChar == 'q') break;
+         }
+
+
+
+
+         //         Timer timer = new Timer(trainings[0]);
+         //         timer.timerTick += Timer_timerTick;
+         //         timer.Start();
+
+         //while (System.Console.ReadKey().KeyChar != 'q') { }
       }
 
       private static IPeriod lastPeriod;
       private static void Timer_timerTick(object sender, TimerEventArgs e) {
          if (e.CurrentPeriod != lastPeriod) {
             lastPeriod = e.CurrentPeriod;
-            System.Console.WriteLine(String.Format("{0} {1}", lastPeriod.Duration, lastPeriod.GetType(0)));
+            System.Console.WriteLine(String.Format("{0} {1}", lastPeriod.Duration, lastPeriod.Type));
          }
       }
    }
