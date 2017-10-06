@@ -1,0 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using FreshMvvm;
+using PropertyChanged;
+
+namespace ClimbersHangout.UI.Common.PageModels {
+   [AddINotifyPropertyChangedInterface]
+   public class TimerTrainingListPageModel : FreshBasePageModel {
+   }
+}

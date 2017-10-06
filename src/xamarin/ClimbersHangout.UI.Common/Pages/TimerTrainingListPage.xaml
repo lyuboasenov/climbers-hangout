@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BasePage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
+             x:Class="ClimbersHangout.UI.Common.Pages.TimerTrainingListPage">
+    <pages:BasePage.Content>
+        <StackLayout>
+            <Label Text="Timer training list!" />
+        </StackLayout>
+    </pages:BasePage.Content>
+</pages:BasePage>

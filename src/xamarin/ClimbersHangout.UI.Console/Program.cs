@@ -8,30 +8,32 @@ namespace ClimbersHangout.UI.Console {
       static void Main(string[] args) {
          var trainings = TimeTrainingService.GetAllTrainings();
 
-         Training training = new Training(trainings[1]);
-
-         foreach (var period in training) {
-            System.Console.WriteLine("{0} {1}", period.Type, period.Duration);
-            System.Console.WriteLine("");
-
-            if (System.Console.ReadKey().KeyChar == 'q') break;
-         }
-
-
+         //         TrainingEnumerator trainingEnumerator = new TrainingEnumerator(trainings[1]);
+         //
+         //         foreach (var period in trainingEnumerator) {
+         //            System.Console.WriteLine("{0} {1}", period.Type, period.Duration);
+         //            System.Console.WriteLine("");
+         //
+         //            if (System.Console.ReadKey().KeyChar == 'q') break;
+         //         }
 
 
-         //         Timer timer = new Timer(trainings[0]);
-         //         timer.timerTick += Timer_timerTick;
-         //         timer.Start();
 
-         //while (System.Console.ReadKey().KeyChar != 'q') { }
+
+         TrainingRunner timer = new TrainingRunner(trainings[0]);
+         timer.timerTick += Timer_timerTick;
+         timer.Start();
+
+         while (System.Console.ReadKey().KeyChar != 'q') { }
       }
 
-      private static IPeriod lastPeriod;
+      private static long lastSeconds;
       private static void Timer_timerTick(object sender, TimerEventArgs e) {
-         if (e.CurrentPeriod != lastPeriod) {
-            lastPeriod = e.CurrentPeriod;
-            System.Console.WriteLine(String.Format("{0} {1}", lastPeriod.Duration, lastPeriod.Type));
+         long now = e.Now / 1000;
+         if (now != lastSeconds) {
+            lastSeconds = now;
+            int left = (int)((e.Period.Duration - e.Now + e.Passed) / 1000);
+            System.Console.WriteLine(String.Format("{0} {1}", e.Period.Type, left));
          }
       }
    }

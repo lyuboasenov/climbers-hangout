@@ -1,19 +1,20 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.Widget;
 using Android.OS;
+using ClimbersHangout.UI.Common;
 
-namespace ClimbersHangout.Android
-{
-    [Activity(Label = "ClimbersHangout.Android", MainLauncher = true)]
-    public class MainActivity : Activity
-    {
-        protected override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
+namespace ClimbersHangout.Android {
+   [Activity(Label = "ClimbersHangout.Android", MainLauncher = true)]
+   public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsApplicationActivity {
+      protected override void OnCreate(Bundle savedInstanceState) {
+         base.OnCreate(savedInstanceState);
 
-            // Set our view from the "main" layout resource
-            SetContentView(Resource.Layout.Main);
-        }
-    }
+         global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+         UserDialogs.Init(() => this);
+
+         LoadApplication(new App());
+      }
+   }
 }
 

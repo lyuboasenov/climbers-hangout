@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimbersHangout.Android", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimbersHangout.UI.Console", "ClimbersHangout.UI.Console\ClimbersHangout.UI.Console.csproj", "{83E1533E-8C69-4930-8102-3D4FDFE2C0A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClimbersHangout.Core.UnitTest", "ClimbersHangout.Core.UnitTest\ClimbersHangout.Core.UnitTest.csproj", "{A6BCF144-A186-4FAF-90B3-84F582ACE641}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClimbersHangout.Core.UnitTest", "ClimbersHangout.Core.UnitTest\ClimbersHangout.Core.UnitTest.csproj", "{A6BCF144-A186-4FAF-90B3-84F582ACE641}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

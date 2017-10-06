@@ -1,8 +1,11 @@
-﻿namespace ClimbersHangout.Core.Models {
-   public class Period : IPeriod {
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-      public PeriodType Type { get; set; }
-      public long Duration { get; set; }
-      public bool SkipOnLast { get; set; }
+namespace ClimbersHangout.Core.Models {
+   public interface Period {
+      long Duration { get; }
+      bool SkipOnLast { get; }
+      PeriodType Type { get; }
    }
 }

@@ -5,10 +5,14 @@ using ClimbersHangout.Core.Models;
 
 namespace ClimbersHangout.Core {
    public class TimerEventArgs : EventArgs {
-      public IPeriod CurrentPeriod { get; }
+      public Period Period { get; }
+      public long Passed { get; }
+      public long Now { get; }
 
-      public TimerEventArgs(IPeriod currentPeriod) {
-         this.CurrentPeriod = currentPeriod;
+      public TimerEventArgs(Period period, long passed, long now) {
+         this.Period = period;
+         this.Passed = passed;
+         this.Now = now;
       }
    }
 }
