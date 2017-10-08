@@ -8,23 +8,29 @@ using ClimbersHangout.Core.Models;
 namespace ClimbersHangout.Core {
    public class TrainingRunner {
 
-      private int TIMER_INTERVAL = 50;
+      private static int TIMER_INTERVAL = 50;
+
+      private object syncObject = new object();
 
       private System.Threading.Timer timer;
-      private TrainingEnumerator trainingEnumerator;
+      private readonly TrainingEnumerator trainingEnumerator;
+      private readonly int notificationInterval;
       private long startTime;
       private long pauseStartTime;
       private long offset;
       private long passed;
 
-      public event EventHandler<TimerEventArgs> timerTick;
-      public event EventHandler finished;
+      public event EventHandler<TimerEventArgs> TimerTick;
+      public event EventHandler Finished;
 
-      public TrainingRunner(PeriodGroup periods) {
+      public TrainingRunner(PeriodGroup periods) : this(periods, TIMER_INTERVAL) { }
+
+      public TrainingRunner(PeriodGroup periods, int notificationInterval) {
          if (null == periods) {
             throw new ArgumentNullException(nameof(periods));
          }
          Periods = periods;
+         this.notificationInterval = notificationInterval;
          trainingEnumerator = new TrainingEnumerator(Periods);
       }
 
@@ -34,87 +40,118 @@ namespace ClimbersHangout.Core {
       public bool IsPaused { get; private set; }
 
       public void Start() {
-         if (!IsRunning) {
-            //-1 is specified to prevent timer from starting
-            timer = new System.Threading.Timer(Tick, null, -1, TIMER_INTERVAL);
-            trainingEnumerator.Reset();
+         if (CanStart()) {
+            lock (syncObject) {
+               //-1 is specified to prevent timer from starting
+               timer = new System.Threading.Timer(Tick, null, -1, TIMER_INTERVAL);
+               trainingEnumerator.Reset();
 
-            IsRunning = true;
-            IsPaused = false;
-            offset = 0;
-            passed = 0;
-            pauseStartTime = 0;
-            startTime = GetNowAsMilliseconds();
+               IsRunning = true;
+               IsPaused = false;
+               offset = 0;
+               passed = 0;
+               pauseStartTime = 0;
+               startTime = GetNowAsMilliseconds();
 
-            //starting the timer
-            StartTimer();
+               //starting the timer
+               StartTimer();
+            }
          }
+      }
+
+      public bool CanStart() {
+         return !IsRunning;
       }
 
       public void Stop() {
-         if (IsRunning) {
-            //stop timer and dispose
-            StopTimer();
-            timer.Dispose();
-            timer = null;
+         if (CanStop()) {
+            lock (syncObject) {
+               //stop timer and dispose
+               StopTimer();
+               timer.Dispose();
+               timer = null;
 
-            IsRunning = false;
-            IsPaused = false;
-            startTime = 0;
-            offset = 0;
-            passed = 0;
-            pauseStartTime = 0;
+               IsRunning = false;
+               IsPaused = false;
+               startTime = 0;
+               offset = 0;
+               passed = 0;
+               pauseStartTime = 0;
+            }
          }
+      }
+
+      public bool CanStop() {
+         return IsRunning;
       }
 
       public void Pause() {
-         if (IsRunning && !IsPaused) {
-            IsPaused = true;
-            pauseStartTime = GetNowAsMilliseconds();
-            //pause the timer too
-            StopTimer();
+         if (CanPause()) {
+            lock (syncObject) {
+               IsPaused = true;
+               pauseStartTime = GetNowAsMilliseconds();
+               //pause the timer too
+               StopTimer();
+            }
          }
+      }
+
+      public bool CanPause() {
+         return IsRunning && !IsPaused;
       }
 
       public void Resume() {
-         if (IsRunning && IsPaused) {
-            offset += GetNowAsMilliseconds() - pauseStartTime;
-            pauseStartTime = 0;
-            //restart the timer
-            StartTimer();
+         if (CanResume()) {
+            lock (syncObject) {
+               IsPaused = false;
+               offset += GetNowAsMilliseconds() - pauseStartTime;
+               pauseStartTime = 0;
+               //restart the timer
+               StartTimer();
+            }
          }
       }
 
+      public bool CanResume() {
+         return IsRunning && IsPaused;
+      }
+
       private void StartTimer() {
-         timer.Change(0, TIMER_INTERVAL);
+         timer.Change(0, notificationInterval);
       }
 
       private void StopTimer() {
-         timer.Change(Timeout.Infinite, TIMER_INTERVAL);
+         timer?.Change(Timeout.Infinite, notificationInterval);
       }
 
       private void Tick(object state) {
-         //Stop timer
-         StopTimer();
+         lock (syncObject) {
+            //Stop timer
+            StopTimer();
 
-         long now = GetNowAsMilliseconds();
-         long normalizedNow = now - startTime - offset;
-         Period currentPeriod = GetCurrentPeriod();
+            if (!IsRunning || IsPaused) return;
 
-         if (null == currentPeriod) {
-            OnFinished();
-         } else {
-            if (passed + currentPeriod.Duration < normalizedNow) {
-               passed += currentPeriod.Duration;
-               currentPeriod = MoveNext();
-            }
+            long now = GetNowAsMilliseconds();
+            long normalizedNow = now - startTime - offset;
+            Period currentPeriod = GetCurrentPeriod();
 
-            if (currentPeriod == null) {
+            if (null == currentPeriod) {
                OnFinished();
             } else {
-               OnTimerTick(new TimerEventArgs(currentPeriod, passed, normalizedNow));
-               //restart timer
-               StartTimer();
+               if (passed + currentPeriod.Duration < normalizedNow) {
+                  passed += currentPeriod.Duration;
+                  currentPeriod = MoveNext();
+               }
+
+               if (currentPeriod == null) {
+                  OnFinished();
+               } else {
+                  OnTimerTick(new TimerEventArgs(currentPeriod, passed, normalizedNow));
+                  if (IsRunning && !IsPaused) {
+                     //restart timer
+                     StartTimer();
+                  }
+               }
             }
          }
       }
@@ -129,11 +166,11 @@ namespace ClimbersHangout.Core {
       }
 
       protected virtual void OnTimerTick(TimerEventArgs e) {
-         timerTick?.Invoke(this, e);
+         TimerTick?.Invoke(this, e);
       }
 
       protected virtual void OnFinished() {
-         finished?.Invoke(this, EventArgs.Empty);
+         Finished?.Invoke(this, EventArgs.Empty);
       }
 
       private long GetNowAsMilliseconds() {

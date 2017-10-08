@@ -1,11 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<pages:BasePage xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
+             xmlns:slideOverKit="clr-namespace:SlideOverKit;assembly=SlideOverKit"
+             xmlns:abstractions="clr-namespace:Plugin.CrossPlatformTintedImage.Abstractions;assembly=Plugin.CrossPlatformTintedImage.Abstractions"
              x:Class="ClimbersHangout.UI.Common.Pages.TimerTrainingListPage">
-    <pages:BasePage.Content>
-        <StackLayout>
-            <Label Text="Timer training list!" />
-        </StackLayout>
-    </pages:BasePage.Content>
-</pages:BasePage>
+    <pages:BaseContentPage.SlideMenu>
+        <slideOverKit:SlideMenuView
+            IsFullScreen="False"
+            BackgroundViewColor="Transparent"
+            BackgroundColor="#C82630"
+            MenuOrientations="BottomToTop"
+            WidthRequest="50"
+            HeightRequest="200"
+            DraggerButtonHeight="30"
+            LeftMargin="100"
+            >
+            <StackLayout
+                Orientation="Vertical"
+                Spacing="15"
+                Padding="0, 5">
+                <abstractions:TintedImage 
+                    Source="editor_list_view_hambuger_menu_outline_stroke.png" 
+                    HeightRequest="25"
+                    WidthRequest="25"/>
+                <abstractions:TintedImage 
+                    Source="circle_add_plus_new_outline_stroke.png" 
+                    HeightRequest="25"
+                    WidthRequest="25"/>
+            </StackLayout>
+        </slideOverKit:SlideMenuView>
+    </pages:BaseContentPage.SlideMenu>
+    <pages:BaseContentPage.Content>
+        <Grid>
+            <ListView ItemsSource="{Binding TrainingList}"
+                  SelectedItem="{Binding SelectedTraining, Mode=TwoWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding Name}" Detail="{Binding Description}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </pages:BaseContentPage.Content>
+</pages:BaseContentPage>

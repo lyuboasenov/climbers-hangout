@@ -21,7 +21,7 @@ namespace ClimbersHangout.UI.Console {
 
 
          TrainingRunner timer = new TrainingRunner(trainings[0]);
-         timer.timerTick += Timer_timerTick;
+         timer.TimerTick += Timer_timerTick;
          timer.Start();
 
          while (System.Console.ReadKey().KeyChar != 'q') { }

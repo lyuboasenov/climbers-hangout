@@ -9,8 +9,16 @@
     <PackageReference Include="Acr.UserDialogs" Version="6.5.1" />
     <PackageReference Include="Fody" Version="2.1.3" />
     <PackageReference Include="FreshMvvm" Version="2.2.0" />
+    <PackageReference Include="Microcharts" Version="0.7.1" />
+    <PackageReference Include="Microcharts.Forms" Version="0.7.1" />
+    <PackageReference Include="Plugin.CrossPlatformTintedImage" Version="1.0.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="2.1.4" />
+    <PackageReference Include="SlideOverKit" Version="2.1.4" />
     <PackageReference Include="Xamarin.Forms" Version="2.4.0.282" />
+    <PackageReference Include="Xamarin.Forms.BehaviorsPack" Version="1.3.1" />
+    <PackageReference Include="Xamarin.Forms.Theme.Base" Version="1.0.0.43-pre1" />
+    <PackageReference Include="Xamarin.Forms.Theme.Dark" Version="1.0.0.43-pre1" />
+    <PackageReference Include="Xamarin.Forms.Theme.Light" Version="1.0.0.43-pre1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,10 +29,28 @@
     <Compile Update="Pages\TimerTrainingListPage.xaml.cs">
       <DependentUpon>TimerTrainingListPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NumberUpDownView.xaml.cs">
+      <DependentUpon>NumberUpDownView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TimeSelectView.xaml.cs">
+      <DependentUpon>TimeSelectView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

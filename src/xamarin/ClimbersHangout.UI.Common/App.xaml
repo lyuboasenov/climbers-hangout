@@ -1,0 +1,9 @@
+﻿<Application
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:themes="clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Light"
+    x:Class="ClimbersHangout.UI.Common.App">
+    <Application.Resources>
+        <ResourceDictionary MergedWith="themes:LightThemeResources" />
+    </Application.Resources>
+</Application>

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<pages:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
+             xmlns:forms="clr-namespace:Microcharts.Forms;assembly=Microcharts.Forms"
+             x:Class="ClimbersHangout.UI.Common.Pages.TimerPage">
+    <pages:BaseContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <forms:ChartView 
+                Chart="{Binding Chart}" />
+            <Label 
+                Grid.Row="0"
+                Text="{Binding CurrentTime}" 
+                TextColor="{Binding Color}" 
+                HorizontalOptions="Center"
+                VerticalOptions="Center"/>
+            <!--            <Label Text="{Binding PeriodType}" TextColor="{Binding Color}" />-->
+            <StackLayout 
+                Grid.Row="1"
+                Orientation="Horizontal">
+                <Button Command="{Binding StartCommand}" Text="Start" />
+                <Button Command="{Binding PauseCommand}" Text="Pause" />
+                <Button Command="{Binding ResumeCommand}" Text="Resume" />
+                <Button Command="{Binding StopCommand}" Text="Stop" />
+            </StackLayout>
+        </Grid>
+    </pages:BaseContentPage.Content>
+</pages:BaseContentPage>

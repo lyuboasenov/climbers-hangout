@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<pages:BasePage  xmlns="http://xamarin.com/schemas/2014/forms"
+<pages:BaseContentPage  xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
              x:Class="ClimbersHangout.UI.Common.Pages.AboutPage">
-    <pages:BasePage.Content>
+    <pages:BaseContentPage.Content>
         <StackLayout>
             <Label Text="About page!" />
         </StackLayout>
-    </pages:BasePage.Content>
-</pages:BasePage>
+    </pages:BaseContentPage.Content>
+</pages:BaseContentPage>

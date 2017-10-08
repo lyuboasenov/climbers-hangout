@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ClimbersHangout.Core.Models {
-
-   using System.Collections.Generic;
-
    public class PeriodGroupImpl : PeriodGroup {
       public PeriodGroupImpl() {
          periods = new List<Period>();
