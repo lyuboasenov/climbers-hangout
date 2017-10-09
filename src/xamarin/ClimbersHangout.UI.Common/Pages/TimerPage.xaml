@@ -2,7 +2,7 @@
 <pages:BaseContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
-             xmlns:forms="clr-namespace:Microcharts.Forms;assembly=Microcharts.Forms"
+             xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
              x:Class="ClimbersHangout.UI.Common.Pages.TimerPage">
     <pages:BaseContentPage.Content>
         <Grid>
@@ -10,8 +10,10 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <forms:ChartView 
-                Chart="{Binding Chart}" />
+            <views:CircularProgressView
+                Max="{Binding Duration}"
+                Progress="{Binding Progress}"
+                Color="{Binding Color}"/>
             <Label 
                 Grid.Row="0"
                 Text="{Binding CurrentTime}" 

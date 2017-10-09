@@ -63,7 +63,6 @@ namespace ClimbersHangout.Android
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahText = global::ClimbersHangout.Android.Resource.Styleable.ProgressWheel_ahText;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextColor = global::ClimbersHangout.Android.Resource.Styleable.ProgressWheel_ahTextColor;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextSize = global::ClimbersHangout.Android.Resource.Styleable.ProgressWheel_ahTextSize;
-			global::Microcharts.Droid.Resource.String.library_name = global::ClimbersHangout.Android.Resource.String.library_name;
 			global::ModernHttpClient.Resource.String.library_name = global::ClimbersHangout.Android.Resource.String.library_name;
 			global::Splat.Resource.String.library_name = global::ClimbersHangout.Android.Resource.String.library_name;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::ClimbersHangout.Android.Resource.Attribute.actionBarSize;

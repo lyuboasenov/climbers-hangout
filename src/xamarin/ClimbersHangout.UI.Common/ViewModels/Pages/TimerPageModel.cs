@@ -2,11 +2,9 @@
 using ClimbersHangout.Core;
 using ClimbersHangout.Core.Models;
 using FreshMvvm;
-using Microcharts;
 using PropertyChanged;
 using SkiaSharp;
 using Xamarin.Forms;
-using Entry = Microcharts.Entry;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
@@ -26,17 +24,18 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
             this.runner = new TrainingRunner(training, 100);
             this.runner.TimerTick += Runner_TimerTick;
             this.runner.Finished += Runner_Finished;
-            Chart = GetChart(null);
          }
       }
-
-      public Chart Chart { get; set; }
 
       public string CurrentTime { get; set; }
 
       public string PeriodType { get; set; }
 
       public Color Color { get; set; }
+
+      public double Progress { get; set; }
+
+      public double Duration { get; set; }
 
       #region Commands
 
@@ -113,24 +112,11 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
       }
 
       private void Runner_TimerTick(object sender, TimerEventArgs e) {
-
-         var entries = new[]
-         {
-            new Entry(GetValue(e.Now, e.Passed, e.Period.Duration))
-            {
-               Color = GetColor(e.Period.Type)
-            },
-            new Entry(GetValue(e.Now))
-            {
-               Color = GetColor(Core.Models.PeriodType.Undefined)
-            }
-         };
-
-         Chart = GetChart(entries);
-
          CurrentTime = GetCurrentTime(e.Now, e.Passed, e.Period.Duration);
          PeriodType = e.Period.Type.ToString();
          Color = GetFormsColor(e.Period.Type);
+         Progress = e.Now - e.Passed;
+         Duration = e.Period.Duration;
       }
 
       private Color GetFormsColor(PeriodType type) {
@@ -170,7 +156,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
       private float GetValue(long now, long passed, long duration) {
          var currentPeriodPassed = now - passed;
 
-         return 1000 * ((float)currentPeriodPassed / duration);
+         return ((float)currentPeriodPassed * 100 / duration);
       }
 
       private SKColor GetColor(PeriodType type) {
@@ -193,17 +179,6 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
                break;
          }
          return SKColor.Parse(colorCode);
-      }
-
-      private Chart GetChart(Entry[] entries) {
-         entries = entries ?? new Entry[0];
-
-         return new RadialGaugeChart() {
-            MaxValue = 1000,
-            MinValue = 0,
-            Entries = entries,
-            BackgroundColor = SKColor.Empty
-         };
       }
    }
 }
