@@ -1,5 +1,6 @@
 ﻿using System;
 using ClimbersHangout.UI.Common.Helpers;
+using Newtonsoft.Json;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -105,26 +106,69 @@ namespace ClimbersHangout.UI.Common.Views {
 
          private static void DrawGauge(SKCanvas canvas, float radius, int cx, int cy,
             float strokeWidth, Color color, double progress, double minimum, double maximum) {
+            var skColor = ColorHelper.TranslateColor(color);
+            var actualProgress = (Math.Abs(progress) - minimum) / maximum;
+            var sweepAngle = (float)(360 * actualProgress);
+            var startAngle = 270;
+            var rect = SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius);
+
+            //Draw shade
+            var colors = new[] { SKColor.Empty, SKColor.Empty, skColor.WithAlpha(170), SKColor.Empty };
+            var glowRadius = radius + radius * 0.2f * (float)actualProgress;
+            var glowFactor = (float)radius / glowRadius;
+            var colorPos = new[] { 0f, glowFactor - 0.01f, glowFactor, 1f };
+
+            using (var paint = new SKPaint {
+               Style = SKPaintStyle.Stroke,
+               StrokeWidth = (glowRadius - radius) * 2,
+               StrokeCap = SKStrokeCap.Butt,
+               Color = skColor.WithAlpha(230),
+               IsAntialias = true,
+               Shader = SKShader.CreateRadialGradient(
+                  new SKPoint(cx, cy),
+                  glowRadius,
+                  colors,
+                  colorPos,
+                  SKShaderTileMode.Repeat)
+            }) {
+               using (SKPath path = new SKPath()) {
+                  path.AddArc(rect, startAngle, sweepAngle);
+                  canvas.DrawPath(path, paint);
+               }
+            }
+
+            //Draw progress
             using (var paint = new SKPaint {
                Style = SKPaintStyle.Stroke,
                StrokeWidth = strokeWidth,
                StrokeCap = SKStrokeCap.Round,
-               Color = ColorHelper.TranslateColor(color),
+               Color = skColor,
                IsAntialias = true,
-               //               Shader = SKShader.CreateRadialGradient(
-               //                  new SKPoint(cx, cy),
-               //                  radius,
-               //                  new SKColor[] { ColorHelper.TranslateColor(color), SKColor.Empty },
-               //                  new[] { 0, 95f },
-               //                  SKShaderTileMode.Repeat)
             }) {
                using (SKPath path = new SKPath()) {
-                  var sweepAngle = (float)(360 * (Math.Abs(progress) - minimum) / maximum);
-                  path.AddArc(SKRect.Create(cx - radius, cy - radius, 2 * radius, 2 * radius), 270, sweepAngle);
+                  path.AddArc(rect, startAngle, sweepAngle);
                   canvas.DrawPath(path, paint);
                }
             }
+
+            //Draw finishing point
+            var radianAngle = (sweepAngle - 90) * Math.PI / 180;
+            var x = (float)(cx + radius * Math.Cos(radianAngle));
+            var y = (float)(cy + radius * Math.Sin(radianAngle));
+            var finishingPointRadius = strokeWidth * 0.9f;
+            using (var paint = new SKPaint {
+               IsAntialias = true,
+               Shader = SKShader.CreateRadialGradient(
+                  new SKPoint(x, y),
+                  finishingPointRadius,
+                  new[] { skColor, skColor, SKColor.Empty },
+                  new[] { 0f, .7f, 1f },
+                  SKShaderTileMode.Repeat)
+            }) {
+               canvas.DrawCircle(x, y, finishingPointRadius, paint);
+            }
          }
       }
+
    }
 }
