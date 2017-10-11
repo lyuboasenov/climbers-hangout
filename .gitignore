@@ -57,4 +57,5 @@ freeline_project_description.json
 
 #VS files
 *.suo
+*.user
 .vs/
