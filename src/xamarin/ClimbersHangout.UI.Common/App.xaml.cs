@@ -22,6 +22,12 @@ namespace ClimbersHangout.UI.Common {
          masterDetailNav.AddPage<TimerSetupPageModel>("Timer");
          masterDetailNav.AddPage<AboutPageModel>("About");
          MainPage = masterDetailNav;
+
+         MessagingCenter.Subscribe<Pages.TimerTrainingListPage>(this, "GoBackToMainPage", (m) => {
+            Device.BeginInvokeOnMainThread(() => {
+               MainPage = masterDetailNav;
+            });
+         });
       }
 
       protected override void OnStart() {
