@@ -1,6 +1,7 @@
 ﻿using System;
 using ClimbersHangout.Core;
 using ClimbersHangout.Core.Models;
+using ClimbersHangout.UI.Common.Pages;
 using FreshMvvm;
 using PropertyChanged;
 using SkiaSharp;

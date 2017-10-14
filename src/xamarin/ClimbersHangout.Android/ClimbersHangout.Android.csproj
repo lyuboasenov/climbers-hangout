@@ -198,7 +198,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
-    <Compile Include="Renders\PageImpInterfaceRendererDroid.cs" />
+    <Compile Include="Views\Renderers\FontAwesomeIconRenderer.cs" />
+    <Compile Include="Views\Renderers\NoUnderlineEntryRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\CircularProgressView.cs" />
@@ -206,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <AndroidAsset Include="Assets\FontAwesome.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AndroidAsset>
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
@@ -218,6 +222,7 @@
     <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Renders\" />
     <Folder Include="Resources\mipmap-hdpi\" />
     <Folder Include="Resources\mipmap-mdpi\" />
     <Folder Include="Resources\mipmap-xhdpi\" />

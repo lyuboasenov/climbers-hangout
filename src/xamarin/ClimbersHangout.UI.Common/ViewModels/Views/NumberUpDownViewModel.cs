@@ -27,23 +27,38 @@ namespace ClimbersHangout.UI.Common.ViewModels.Views {
       public int MaxValue { get; set; }
 
       public Command MinusCommand {
-         get { return minusCommand ?? (minusCommand = new Command(MinusExecute)); }
+         get { return minusCommand ?? (minusCommand = new Command(MinusExecute, MinusCanExecute)); }
       }
 
       public Command PlusCommand {
-         get { return plusCommand ?? (plusCommand = new Command(PlusExecute)); }
+         get { return plusCommand ?? (plusCommand = new Command(PlusExecute, PlusCanExecute)); }
+      }
+
+      private bool MinusCanExecute() {
+         return Value > MinValue;
+      }
+
+      private bool PlusCanExecute() {
+         return Value < MaxValue;
       }
 
       private void MinusExecute() {
          Value = Value - 1 < MinValue ? MinValue : Value - 1;
+         InvalidateCommands();
       }
 
       private void PlusExecute() {
          Value += 1;
+         InvalidateCommands();
       }
 
       private void OnValueChanged() {
          model.Value = Value;
+      }
+
+      private void InvalidateCommands() {
+         MinusCommand?.ChangeCanExecute();
+         PlusCommand?.ChangeCanExecute();
       }
    }
 }

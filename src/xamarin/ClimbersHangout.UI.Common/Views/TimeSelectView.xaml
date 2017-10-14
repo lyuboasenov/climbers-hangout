@@ -2,47 +2,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
              x:Class="ClimbersHangout.UI.Common.Views.TimeSelectView">
-    <views:BaseContentView.Content>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+   <views:BaseContentView.Content>
+      <Grid>
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+         </Grid.ColumnDefinitions>
 
-            <views:TintedImageButton
+         <views:TintedImageButton
                 Grid.Column="0"
                 Source="minus_plus_glyph.png"
                 Command="{Binding MinusCommand}"/>
-            <Entry 
+         <views:NoUnderlineEntry 
                 Grid.Column="1"
                 Text="{Binding Minutes}"
                 HorizontalTextAlignment="Center"
                 IsFocused="{Binding IsMinutesFocused, Mode=OneWayToSource}"
                 Keyboard="Numeric"
                 Margin="10, 0, 10, 0"/>
-            <views:SeparatorView 
+         <views:SeparatorView 
                 Grid.Column="1"
                 VerticalOptions="End"
                 IsVisible="{Binding MinutesFocused}"/>
-            <Label Grid.Column="2" Text=":" VerticalOptions="Center" />
-            <Entry 
+         <Label Grid.Column="2" Text=":" VerticalOptions="Center" />
+         <views:NoUnderlineEntry 
                 Grid.Column="3"
                 Text="{Binding Seconds}"
                 HorizontalTextAlignment="Center"
                 IsFocused="{Binding IsSecondsFocused, Mode=OneWayToSource}"
                 Keyboard="Numeric"
                 Margin="10, 0, 10, 0"/>
-            <views:SeparatorView 
+         <views:SeparatorView 
                 Grid.Column="3"
                 VerticalOptions="End"
                 IsVisible="{Binding SecondsFocused}"/>
-            <views:TintedImageButton
+         <views:TintedImageButton
                 Grid.Column="4"
                 Source="add_plus_new_glyph.png"
                 Command="{Binding PlusCommand}"/>
-        </Grid>
-    </views:BaseContentView.Content>
+      </Grid>
+   </views:BaseContentView.Content>
 </views:BaseContentView>

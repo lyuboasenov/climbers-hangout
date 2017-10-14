@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ClimbersHangout.UI.Common.Helpers;
+﻿using ClimbersHangout.UI.Common.Helpers;
 using Plugin.CrossPlatformTintedImage.Abstractions;
 using Xamarin.Forms;
 
 namespace ClimbersHangout.UI.Common.Views {
    public class TintedImageButton : TintedImage {
       public static readonly BindableProperty CommandProperty =
-         BindableProperty.Create("Command", typeof(Command), typeof(ClickableTintedImage), null);
+         BindableProperty.Create("Command", typeof(Command), typeof(ClickableTintedImage), null, propertyChanged: OnCommandPropertyChanged);
 
       public TintedImageButton() {
          this.GestureRecognizers.Add(new TapGestureRecognizer(Tapped));
@@ -25,6 +22,19 @@ namespace ClimbersHangout.UI.Common.Views {
       private void Tapped(View obj) {
          if (Command != null && Command.CanExecute(null)) {
             Command.Execute(null);
+         }
+      }
+
+      private static void OnCommandPropertyChanged(BindableObject bindable, object oldvalue, object newvalue) {
+         TintedImageButton button = ((TintedImageButton)bindable);
+         button.Command.CanExecuteChanged += (sender, e) => button.CanExecuteChanged();
+      }
+
+      private void CanExecuteChanged() {
+         if (Command.CanExecute(null)) {
+            Opacity = 1;
+         } else {
+            Opacity = 0.4;
          }
       }
    }

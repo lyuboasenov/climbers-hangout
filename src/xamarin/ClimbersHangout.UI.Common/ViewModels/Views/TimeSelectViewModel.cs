@@ -10,6 +10,8 @@ namespace ClimbersHangout.UI.Common.ViewModels.Views {
       public Command minusCommand;
       public Command plusCommand;
       private TimeSelectModel model;
+      private bool isChangingValues;
+      private int MAX_VALUE = 3599;
 
       public TimeSelectViewModel() : this(new TimeSelectModel()) {
 
@@ -32,11 +34,11 @@ namespace ClimbersHangout.UI.Common.ViewModels.Views {
       public bool SecondsFocused { get; set; }
 
       public Command MinusCommand {
-         get { return minusCommand ?? (minusCommand = new Command(MinusExecute)); }
+         get { return minusCommand ?? (minusCommand = new Command(MinusExecute, MinusCanExecute)); }
       }
 
       public Command PlusCommand {
-         get { return plusCommand ?? (plusCommand = new Command(PlusExecute)); }
+         get { return plusCommand ?? (plusCommand = new Command(PlusExecute, PlusCanExecute)); }
       }
 
       private void OnIsMinutesFocusedChanged() {
@@ -53,12 +55,21 @@ namespace ClimbersHangout.UI.Common.ViewModels.Views {
          }
       }
 
+      private bool MinusCanExecute() {
+         return model.Time.TotalSeconds > 0;
+      }
+
+      private bool PlusCanExecute() {
+         return model.Time.TotalSeconds < MAX_VALUE;
+      }
+
       private void MinusExecute() {
          if (MinutesFocused) {
             Minutes = Minutes < 1 ? 0 : Minutes - 1;
          } else {
             Seconds = Seconds < 1 ? 0 : Seconds - 1;
          }
+         InvalidateCommands();
       }
 
       private void PlusExecute() {
@@ -67,16 +78,47 @@ namespace ClimbersHangout.UI.Common.ViewModels.Views {
          } else {
             Seconds = Seconds > 58 ? 59 : Seconds + 1;
          }
+         InvalidateCommands();
+      }
+
+      private void InvalidateCommands() {
+         MinusCommand?.ChangeCanExecute();
+         PlusCommand?.ChangeCanExecute();
       }
 
       private void OnMinutesChanged() {
-         ValueChanged();
+         if (!isChangingValues) {
+            CollectValues();
+            ValueChanged();
+         }
       }
 
       private void OnSecondsChanged() {
-         ValueChanged();
+         if (!isChangingValues) {
+            CollectValues();
+            ValueChanged();
+         }
       }
 
-      private void ValueChanged() { model.Time = TimeSpan.FromSeconds(Minutes * 60 + Seconds); }
+      private void CollectValues() {
+         int currentValue = Minutes * 60 + Seconds;
+         if (currentValue != model.Time.TotalSeconds) {
+            model.Time = TimeSpan.FromSeconds(currentValue > 3599 ? 3599 : currentValue);
+            ValueChanged();
+         }
+      }
+
+      private void ValueChanged() {
+         if (!isChangingValues) {
+            try {
+               isChangingValues = true;
+               Minutes = model.Time.Minutes;
+               Seconds = model.Time.Seconds;
+            } finally {
+               isChangingValues = false;
+            }
+         }
+         InvalidateCommands();
+      }
    }
 }
