@@ -10,9 +10,9 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <views:TintedImageButton
+         <views:FontAwesomeButton
                 Grid.Column="0"
-                Source="minus_plus_glyph.png"
+                Icon="Minus"
                 Command="{Binding MinusCommand}"/>
          <views:NoUnderlineEntry 
                 Grid.Column="1"
@@ -20,9 +20,9 @@
                 HorizontalTextAlignment="Center"
                 Keyboard="Numeric"
                 Margin="10, 0, 10, 0"/>
-         <views:TintedImageButton
+         <views:FontAwesomeButton
                 Grid.Column="2"
-                Source="add_plus_new_glyph.png"
+                Icon="Plus"
                 Command="{Binding PlusCommand}"/>
       </Grid>
    </views:BaseContentView.Content>

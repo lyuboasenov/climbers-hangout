@@ -198,7 +198,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
-    <Compile Include="Views\Renderers\FontAwesomeIconRenderer.cs" />
+    <Compile Include="Views\Renderers\FontIconButtonRenderer.cs" />
+    <Compile Include="Views\Renderers\FontIconRenderer.cs" />
     <Compile Include="Views\Renderers\NoUnderlineEntryRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
