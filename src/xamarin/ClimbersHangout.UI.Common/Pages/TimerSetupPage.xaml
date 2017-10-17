@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto" />
          </Grid.RowDefinitions>
 
-         <views:FontAwesomeIcon
+         <views:FontIcon
             Grid.Row="0"
             Grid.Column="0"
             Icon="Wifi"
@@ -33,14 +33,14 @@
 
          <views:SeparatorView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
 
-         <views:FontAwesomeIcon
+         <views:FontIcon
             Grid.Row="2"
             Grid.Column="0"
             Icon="WikipediaW"
             VerticalOptions="Center" />
          <views:NumberUpDownView Grid.Row="2" Grid.Column="1" Model="{Binding RepetitionCountModel}" />
 
-         <views:FontAwesomeIcon
+         <views:FontIcon
             Grid.Row="3"
             Grid.Column="0"
             Icon="WindowClose"

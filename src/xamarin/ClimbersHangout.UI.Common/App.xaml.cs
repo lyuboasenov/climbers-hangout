@@ -1,5 +1,4 @@
 ﻿using Acr.UserDialogs;
-using ClimbersHangout.UI.Common.Pages;
 using ClimbersHangout.UI.Common.ViewModels.Pages;
 using FreshMvvm;
 using Xamarin.Forms;
@@ -16,6 +15,7 @@ namespace ClimbersHangout.UI.Common {
 
          //FreshIOC.Container.Register<IDatabaseService, DatabaseService>();
          FreshIOC.Container.Register<IUserDialogs>(UserDialogs.Instance);
+
          var masterDetailNav = new FreshMasterDetailNavigationContainer();
          masterDetailNav.Init("Menu");
          masterDetailNav.AddPage<TimerTrainingListPageModel>("Timed trainings");

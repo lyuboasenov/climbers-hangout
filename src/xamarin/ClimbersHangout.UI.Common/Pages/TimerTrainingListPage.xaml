@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
              xmlns:slideOverKit="clr-namespace:SlideOverKit;assembly=SlideOverKit"
-             xmlns:abstractions="clr-namespace:Plugin.CrossPlatformTintedImage.Abstractions;assembly=Plugin.CrossPlatformTintedImage.Abstractions"
-             xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
              x:Class="ClimbersHangout.UI.Common.Pages.TimerTrainingListPage">
    <pages:BaseContentPage.SlideMenu>
       <slideOverKit:SlideMenuView
@@ -21,11 +19,11 @@
                 Orientation="Vertical"
                 Spacing="15"
                 Padding="0, 5">
-            <abstractions:TintedImage 
+            <Image 
                     Source="editor_list_view_hambuger_menu_outline_stroke.png" 
                     HeightRequest="25"
                     WidthRequest="25"/>
-            <abstractions:TintedImage 
+            <Image 
                     Source="circle_add_plus_new_outline_stroke.png" 
                     HeightRequest="25"
                     WidthRequest="25"/>
@@ -46,7 +44,7 @@
                </DataTemplate>
             </ListView.ItemTemplate>
          </ListView>
-         <Button Grid.Row="1" Clicked="Button_OnClicked"></Button>
+         <Button Grid.Row="1" Command="{Binding AddTrainingCommand}" />
       </Grid>
    </pages:BaseContentPage.Content>
 </pages:BaseContentPage>

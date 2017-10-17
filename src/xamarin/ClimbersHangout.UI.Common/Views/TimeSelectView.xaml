@@ -12,7 +12,7 @@
             <ColumnDefinition Width="Auto" />
          </Grid.ColumnDefinitions>
 
-         <views:FontAwesomeButton
+         <views:FontIconButton
             Grid.Column="0"
             Icon="Minus"
             Command="{Binding MinusCommand}"/>
@@ -39,7 +39,7 @@
                 Grid.Column="3"
                 VerticalOptions="End"
                 IsVisible="{Binding SecondsFocused}"/>
-         <views:FontAwesomeButton
+         <views:FontIconButton
             Grid.Column="4"
             Icon="Plus"
             Command="{Binding PlusCommand}"/>

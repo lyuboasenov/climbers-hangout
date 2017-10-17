@@ -1,6 +1,5 @@
 ﻿using System;
 using ClimbersHangout.UI.Common.Helpers;
-using Newtonsoft.Json;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
