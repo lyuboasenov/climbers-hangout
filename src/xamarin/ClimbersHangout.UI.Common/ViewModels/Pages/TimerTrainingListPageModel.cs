@@ -42,6 +42,9 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
             image = await PickImageFromGallery();
          }
 
+         if (image != null) {
+            await CoreMethods.PushPageModel<ManageRoutePageModel>(image, true);
+         }
       }
 
       private async Task<MediaFile> PickImageFromGallery() {
