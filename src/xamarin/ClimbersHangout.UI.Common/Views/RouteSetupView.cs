@@ -35,6 +35,10 @@ namespace ClimbersHangout.UI.Common.Views {
       /// </summary>
       private SKSize lastCanvasSize;
 
+      private SKPoint topLeftPoint = new SKPoint(0, 0);
+
+      private SKPoint startPanTopLeftPoint;
+
       public static readonly BindableProperty EditModeProperty =
          BindableProperty.Create(nameof(EditMode), typeof(Mode), typeof(RouteSetupView), Mode.Move,
             propertyChanged: OnImageLocationChanged);
@@ -71,7 +75,27 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       private void PanRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e) {
-
+         if (EditMode == Mode.Move) {
+            switch (e.StatusType) {
+               case GestureStatus.Started:
+                  startPanTopLeftPoint = topLeftPoint;
+                  break;
+               case GestureStatus.Running:
+                  topLeftPoint = new SKPoint((float)(startPanTopLeftPoint.X - e.TotalX), (float)(startPanTopLeftPoint.Y - e.TotalY));
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+               case GestureStatus.Completed:
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+               case GestureStatus.Canceled:
+                  topLeftPoint = startPanTopLeftPoint;
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+            }
+         }
       }
 
       private void PinchRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e) {
@@ -99,6 +123,17 @@ namespace ClimbersHangout.UI.Common.Views {
          }
       }
 
+      private void VerifyPanningInBounds() {
+         var boundWidth = lastCanvasSize.Width / scaleFactor;
+         var boundHeight = lastCanvasSize.Height / scaleFactor;
+         float x = (float)Math.Min(bitmap.Width - boundWidth, topLeftPoint.X);
+         x = Math.Max(0, x);
+         float y = (float)Math.Min(bitmap.Height - boundHeight, topLeftPoint.Y);
+         y = Math.Max(0, y);
+
+         topLeftPoint = new SKPoint(x, y);
+      }
+
       /// <summary>
       /// Recalculates the scale factor so ensuring it is in the
       /// absolute scale bounds. This method assumes that minimumScaleFactor
@@ -108,6 +143,8 @@ namespace ClimbersHangout.UI.Common.Views {
       private void VerifyScaleFactorInBounds() {
          scaleFactor = Math.Max(minimumScaleFactor, scaleFactor);
          scaleFactor = Math.Min(ABSOLUTE_MAX_SCALE_FACTOR, scaleFactor);
+
+         VerifyPanningInBounds();
       }
 
       /// <summary>
@@ -115,9 +152,9 @@ namespace ClimbersHangout.UI.Common.Views {
       ///that the whole are of the control is covered
       /// </summary>
       private void RecalculateMinimumScaleFactor() {
-         var boundsAspectRatio = CanvasSize.Width / CanvasSize.Height;
+         double boundsAspectRatio = CanvasSize.Width / CanvasSize.Height;
          double widthAspect = CanvasSize.Width / bitmap.Width;
-         var bitmapAspectRatio = bitmap.Width / bitmap.Height;
+         double bitmapAspectRatio = (double)bitmap.Width / bitmap.Height;
 
          minimumScaleFactor = Math.Max(widthAspect, (bitmapAspectRatio / boundsAspectRatio) * widthAspect);
          minimumScaleFactor = Math.Max(ABSOLUTE_MIN_SCALE_FACTOR, minimumScaleFactor);
@@ -212,7 +249,7 @@ namespace ClimbersHangout.UI.Common.Views {
 
       private void DrawImage(SKCanvas canvas) {
          if (bitmap != null) {
-            var bounds = canvas.LocalClipBounds;
+            var bounds = lastCanvasSize;
 
             var dest = new SKRect() {
                Location = new SKPoint(0, 0),
@@ -220,7 +257,7 @@ namespace ClimbersHangout.UI.Common.Views {
             };
 
             var source = new SKRect() {
-               Location = new SKPoint(0, 0),
+               Location = topLeftPoint,
                Size = new SKSize(
                   (float)(bounds.Width / scaleFactor),
                   (float)(bounds.Height / scaleFactor))
