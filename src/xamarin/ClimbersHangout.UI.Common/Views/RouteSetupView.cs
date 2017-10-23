@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
+using ClimbersHangout.UI.Common.Helpers;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -12,7 +15,9 @@ namespace ClimbersHangout.UI.Common.Views {
       private const double ABSOLUTE_MIN_SCALE_FACTOR = 1;
       private const double ABSOLUTE_MAX_SCALE_FACTOR = 4;
 
+      private List<Hold> holds = new List<Hold>();
       private Dictionary<long, SKPath> inProgressPaths = new Dictionary<long, SKPath>();
+      private SKPath inProgressPath;
       private List<SKPath> completedPaths = new List<SKPath>();
       private SKBitmap bitmap;
 
@@ -35,9 +40,21 @@ namespace ClimbersHangout.UI.Common.Views {
       /// </summary>
       private SKSize lastCanvasSize;
 
+      /// <summary>
+      /// Current point relative from which the background is taken.
+      /// </summary>
       private SKPoint topLeftPoint = new SKPoint(0, 0);
 
+      /// <summary>
+      /// Saved location durring the panning action
+      /// </summary>
       private SKPoint startPanTopLeftPoint;
+
+      /// <summary>
+      /// Bag for holding current touch events
+      /// </summary>
+      private readonly Dictionary<long, TouchManipulationInfo> touchDictionary =
+         new Dictionary<long, TouchManipulationInfo>();
 
       public static readonly BindableProperty EditModeProperty =
          BindableProperty.Create(nameof(EditMode), typeof(Mode), typeof(RouteSetupView), Mode.Move,
@@ -58,70 +75,10 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       public RouteSetupView() {
-         var pinchRecognizer = new PinchGestureRecognizer();
-         pinchRecognizer.PinchUpdated += PinchRecognizer_PinchUpdated;
-         GestureRecognizers.Add(pinchRecognizer);
-
-         var panRecognizer = new PanGestureRecognizer();
-         panRecognizer.PanUpdated += PanRecognizer_PanUpdated;
-         GestureRecognizers.Add(panRecognizer);
-
-         var tapRecognizer = new TapGestureRecognizer();
-         tapRecognizer.Tapped += TapRecognizer_Tapped;
+         EnableTouchEvents = true;
       }
 
-      private void TapRecognizer_Tapped(object sender, EventArgs e) {
-
-      }
-
-      private void PanRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e) {
-         if (EditMode == Mode.Move) {
-            switch (e.StatusType) {
-               case GestureStatus.Started:
-                  startPanTopLeftPoint = topLeftPoint;
-                  break;
-               case GestureStatus.Running:
-                  topLeftPoint = new SKPoint((float)(startPanTopLeftPoint.X - e.TotalX), (float)(startPanTopLeftPoint.Y - e.TotalY));
-                  VerifyPanningInBounds();
-                  InvalidateSurface();
-                  break;
-               case GestureStatus.Completed:
-                  VerifyPanningInBounds();
-                  InvalidateSurface();
-                  break;
-               case GestureStatus.Canceled:
-                  topLeftPoint = startPanTopLeftPoint;
-                  VerifyPanningInBounds();
-                  InvalidateSurface();
-                  break;
-            }
-         }
-      }
-
-      private void PinchRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e) {
-         if (EditMode == Mode.Move) {
-            switch (e.Status) {
-               case GestureStatus.Started:
-                  startScaleFactor = scaleFactor;
-                  break;
-               case GestureStatus.Running:
-                  scaleFactor *= e.Scale;
-                  VerifyScaleFactorInBounds();
-                  InvalidateSurface();
-                  break;
-               case GestureStatus.Completed:
-                  scaleFactor *= e.Scale;
-                  VerifyScaleFactorInBounds();
-                  InvalidateSurface();
-                  break;
-               case GestureStatus.Canceled:
-                  scaleFactor = startScaleFactor;
-                  VerifyScaleFactorInBounds();
-                  InvalidateSurface();
-                  break;
-            }
-         }
-      }
+      private Hold currentHold;
 
       private void VerifyPanningInBounds() {
          var boundWidth = lastCanvasSize.Width / scaleFactor;
@@ -191,38 +148,156 @@ namespace ClimbersHangout.UI.Common.Views {
 
       protected override void OnTouch(SKTouchEventArgs e) {
          base.OnTouch(e);
+
+         Trace.WriteLine(e);
+
+         if (!e.Handled) {
+            OnTouchEvent(e.Id, e.ActionType, e.Location);
+            e.Handled = true;
+         }
+      }
+
+      private void OnTouchEvent(long id, SKTouchAction type, SKPoint location) {
+         switch (type) {
+            case SKTouchAction.Pressed:
+               touchDictionary.Add(id, new TouchManipulationInfo {
+                  InitialPoint = location,
+                  PreviousPoint = location,
+                  NewPoint = location
+               });
+               ProcessTouchEvent(type);
+               break;
+
+            case SKTouchAction.Moved:
+               TouchManipulationInfo info = touchDictionary[id];
+               info.NewPoint = location;
+               ProcessTouchEvent(type);
+               info.PreviousPoint = info.NewPoint;
+               break;
+
+            case SKTouchAction.Released:
+               touchDictionary[id].NewPoint = location;
+               ProcessTouchEvent(type);
+               touchDictionary.Remove(id);
+               break;
+
+            case SKTouchAction.Cancelled:
+               ProcessTouchEvent(type);
+               touchDictionary.Remove(id);
+               break;
+         }
+      }
+
+      private void ProcessTouchEvent(SKTouchAction type) {
+         TouchManipulationInfo[] infos = new TouchManipulationInfo[touchDictionary.Count];
+         touchDictionary.Values.CopyTo(infos, 0);
+
+         switch (EditMode) {
+            case Mode.Move:
+               AdjustBackground(infos, type);
+               break;
+            case Mode.Hold:
+               ManageHolds(infos, type);
+               break;
+            case Mode.Line:
+               ManageLines(infos, type);
+               break;
+         }
+      }
+
+      private void ManageHolds(TouchManipulationInfo[] infos, SKTouchAction type) {
+
+      }
+
+      private void ManageLines(TouchManipulationInfo[] infos, SKTouchAction type) {
          if (EditMode == Mode.Line) {
-            switch (e.ActionType) {
+            var currentPoint = new SKPoint(
+               infos[0].NewPoint.X + topLeftPoint.X,
+               infos[0].NewPoint.Y + topLeftPoint.Y);
+            switch (type) {
                case SKTouchAction.Pressed:
-                  if (!inProgressPaths.ContainsKey(e.Id)) {
-                     SKPath path = new SKPath();
-                     path.MoveTo(e.Location);
-                     inProgressPaths.Add(e.Id, path);
-                     InvalidateSurface();
-                  }
+                  inProgressPath = new SKPath();
+                  inProgressPath.MoveTo(currentPoint);
+                  InvalidateSurface();
                   break;
                case SKTouchAction.Moved:
-                  if (inProgressPaths.ContainsKey(e.Id)) {
-                     SKPath path = inProgressPaths[e.Id];
-                     path.LineTo(e.Location);
-                     InvalidateSurface();
-                  }
+                  inProgressPath.LineTo(currentPoint);
+                  InvalidateSurface();
                   break;
                case SKTouchAction.Released:
-                  if (inProgressPaths.ContainsKey(e.Id)) {
-                     completedPaths.Add(inProgressPaths[e.Id]);
-                     inProgressPaths.Remove(e.Id);
-                     InvalidateSurface();
-                  }
+                  completedPaths.Add(inProgressPath);
+                  inProgressPath = null;
+                  InvalidateSurface();
                   break;
                case SKTouchAction.Cancelled:
-                  if (inProgressPaths.ContainsKey(e.Id)) {
-                     inProgressPaths.Remove(e.Id);
-                     InvalidateSurface();
-                  }
+                  inProgressPath = null;
+                  InvalidateSurface();
                   break;
             }
          }
+      }
+
+      private void AdjustBackground(TouchManipulationInfo[] infos, SKTouchAction type) {
+         if (infos.Length == 1) {
+            switch (type) {
+               case SKTouchAction.Pressed:
+                  startPanTopLeftPoint = topLeftPoint;
+                  break;
+               case SKTouchAction.Moved:
+                  double totalX = infos[0].NewPoint.X - infos[0].InitialPoint.X;
+                  double totalY = infos[0].NewPoint.Y - infos[0].InitialPoint.Y;
+                  topLeftPoint = new SKPoint((float)(startPanTopLeftPoint.X - totalX),
+                     (float)(startPanTopLeftPoint.Y - totalY));
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+               case SKTouchAction.Released:
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+               case SKTouchAction.Cancelled:
+                  topLeftPoint = startPanTopLeftPoint;
+                  VerifyPanningInBounds();
+                  InvalidateSurface();
+                  break;
+            }
+         } else {
+            double initialDistance = CalculateDistance(infos[0].InitialPoint, infos[1].InitialPoint);
+            double distance = CalculateDistance(infos[0].NewPoint, infos[1].NewPoint);
+            double scale = distance / initialDistance;
+            switch (type) {
+               case SKTouchAction.Pressed:
+                  startScaleFactor = scaleFactor;
+                  break;
+               case SKTouchAction.Moved:
+                  scaleFactor = scale * startScaleFactor;
+                  VerifyScaleFactorInBounds();
+                  InvalidateSurface();
+                  break;
+               case SKTouchAction.Released:
+                  scaleFactor = scale * startScaleFactor;
+                  VerifyScaleFactorInBounds();
+                  InvalidateSurface();
+                  break;
+               case SKTouchAction.Cancelled:
+                  scaleFactor = startScaleFactor;
+                  VerifyScaleFactorInBounds();
+                  InvalidateSurface();
+                  break;
+            }
+         }
+      }
+
+      private SKPath AdjustPath(SKPath path) {
+         var adjustedPath = new SKPath();
+         foreach (var point in path.Points) {
+            adjustedPath.MoveTo(new SKPoint(point.X - topLeftPoint.X, point.Y - topLeftPoint.Y));
+         }
+         return adjustedPath;
+      }
+
+      private double CalculateDistance(SKPoint p1, SKPoint p2) {
+         return Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
       }
 
       protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
@@ -238,12 +313,18 @@ namespace ClimbersHangout.UI.Common.Views {
 
          DrawImage(canvas);
 
+         DrawHolds(canvas);
+
+         DrawLines(canvas);
+      }
+
+      private void DrawLines(SKCanvas canvas) {
          foreach (SKPath path in completedPaths) {
-            canvas.DrawPath(path, paint);
+            canvas.DrawPath(AdjustPath(path), paint);
          }
 
-         foreach (SKPath path in inProgressPaths.Values) {
-            canvas.DrawPath(path, paint);
+         if (null != inProgressPath) {
+            canvas.DrawPath(AdjustPath(inProgressPath), paint);
          }
       }
 
@@ -267,10 +348,42 @@ namespace ClimbersHangout.UI.Common.Views {
          }
       }
 
+      private void DrawHolds(SKCanvas canvas) {
+         if (null != holds && holds.Count > 0) {
+            foreach (var hold in holds) {
+               using (var paint = new SKPaint() {
+                  Color = ColorHelper.TranslateColor(hold.Color),
+                  Style = SKPaintStyle.Stroke,
+                  StrokeWidth = (float)(5 * scaleFactor),
+                  StrokeCap = SKStrokeCap.Round,
+                  StrokeJoin = SKStrokeJoin.Round
+               }) {
+                  canvas.DrawCircle(
+                     (float)(hold.Center.X - topLeftPoint.X),
+                     (float)(hold.Center.Y - topLeftPoint.Y),
+                     (float)(hold.Radius * scaleFactor),
+                     paint);
+               }
+            }
+         }
+      }
+
       public enum Mode {
          Move,
          Line,
          Hold
+      }
+
+      private class Hold {
+         public double Radius { get; set; }
+         public Point Center { get; set; }
+         public Color Color { get; set; }
+      }
+
+      class TouchManipulationInfo {
+         public SKPoint PreviousPoint { set; get; }
+         public SKPoint NewPoint { set; get; }
+         public SKPoint InitialPoint { get; set; }
       }
    }
 }
