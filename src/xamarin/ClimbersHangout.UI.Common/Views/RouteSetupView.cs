@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using ClimbersHangout.UI.Common.Helpers;
@@ -194,7 +195,7 @@ namespace ClimbersHangout.UI.Common.Views {
 
          switch (EditMode) {
             case Mode.Move:
-               AdjustBackground(infos, type);
+               NormalizeBackground(infos, type);
                break;
             case Mode.Hold:
                ManageHolds(infos, type);
@@ -237,7 +238,7 @@ namespace ClimbersHangout.UI.Common.Views {
          }
       }
 
-      private void AdjustBackground(TouchManipulationInfo[] infos, SKTouchAction type) {
+      private void NormalizeBackground(TouchManipulationInfo[] infos, SKTouchAction type) {
          if (infos.Length == 1) {
             switch (type) {
                case SKTouchAction.Pressed:
@@ -288,12 +289,31 @@ namespace ClimbersHangout.UI.Common.Views {
          }
       }
 
-      private SKPath AdjustPath(SKPath path) {
-         var adjustedPath = new SKPath();
-         foreach (var point in path.Points) {
-            adjustedPath.MoveTo(new SKPoint(point.X - topLeftPoint.X, point.Y - topLeftPoint.Y));
+      private SKPath NormalizePath(SKPath path) {
+         var normalizedPath = new SKPath();
+         if (path.PointCount > 0) {
+            SKPoint firstPoint = path.Points[0];
+            normalizedPath.MoveTo(new SKPoint(firstPoint.X - topLeftPoint.X, firstPoint.Y - topLeftPoint.Y));
+
+            if (path.PointCount >= 3) {
+               for (int i = 2; i < path.PointCount; i++) {
+                  var point1 = NormalizePoint(path.Points[i - 2]);
+                  var point2 = NormalizePoint(path.Points[i - 1]);
+                  var point3 = NormalizePoint(path.Points[i]);
+                  normalizedPath.CubicTo(point1, point2, point3);
+               }
+            } else {
+               foreach (SKPoint point in path.Points) {
+                  normalizedPath.LineTo(NormalizePoint(point));
+               }
+            }
          }
-         return adjustedPath;
+
+         return normalizedPath;
+      }
+
+      private SKPoint NormalizePoint(SKPoint point) {
+         return new SKPoint(point.X - topLeftPoint.X, point.Y - topLeftPoint.Y);
       }
 
       private double CalculateDistance(SKPoint p1, SKPoint p2) {
@@ -320,11 +340,11 @@ namespace ClimbersHangout.UI.Common.Views {
 
       private void DrawLines(SKCanvas canvas) {
          foreach (SKPath path in completedPaths) {
-            canvas.DrawPath(AdjustPath(path), paint);
+            canvas.DrawPath(NormalizePath(path), paint);
          }
 
          if (null != inProgressPath) {
-            canvas.DrawPath(AdjustPath(inProgressPath), paint);
+            canvas.DrawPath(NormalizePath(inProgressPath), paint);
          }
       }
 
