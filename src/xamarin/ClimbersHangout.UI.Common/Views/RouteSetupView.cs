@@ -1,39 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ClimbersHangout.Core.Models.Routes;
+using ClimbersHangout.UI.Common.Helpers;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
+using Path = ClimbersHangout.Core.Models.Routes.Path;
 
 namespace ClimbersHangout.UI.Common.Views {
    public class RouteSetupView : SKCanvasView {
-      private const double INITIAL_MAX_SIZE = 2048d;
       private const double ABSOLUTE_MIN_SCALE_FACTOR = 1;
       private const double ABSOLUTE_MAX_SCALE_FACTOR = 4;
-      private const double NEAREST_HOLD_DISTANCE = 20;
 
-      private readonly List<Hold> completedHolds = new List<Hold>();
-      private SKPath inProgressPath;
-      private readonly List<SKPath> completedPaths = new List<SKPath>();
+      private readonly Route route = new Route();
+
+      private Path inProgressPath;
+      private Hold inProgressHold;
+
       private SKBitmap bitmap;
-
-      private readonly SKPaint completedPaint = new SKPaint {
-         Style = SKPaintStyle.Stroke,
-         Color = SKColors.White,
-         StrokeWidth = 10,
-         StrokeCap = SKStrokeCap.Round,
-         StrokeJoin = SKStrokeJoin.Round
-      };
-
-      private readonly SKPaint inProgressPaint = new SKPaint {
-         Style = SKPaintStyle.Stroke,
-         Color = SKColors.Red,
-         StrokeWidth = 10,
-         StrokeCap = SKStrokeCap.Round,
-         StrokeJoin = SKStrokeJoin.Round
-      };
 
       /// <summary>
       /// Current bitmap scale factor
@@ -57,20 +43,18 @@ namespace ClimbersHangout.UI.Common.Views {
       /// <summary>
       /// Current point relative from which the background is taken.
       /// </summary>
-      private SKPoint topLeftPoint = new SKPoint(0, 0);
+      private Point originPoint = new Point(0, 0);
 
       /// <summary>
       /// Saved location durring the panning action
       /// </summary>
-      private SKPoint startPanTopLeftPoint;
+      private Point startPanTopLeftPoint;
 
       /// <summary>
       /// Bag for holding current touch events
       /// </summary>
       private readonly Dictionary<long, TouchManipulationInfo> touchDictionary =
          new Dictionary<long, TouchManipulationInfo>();
-
-      private Hold inProgressHold;
 
       public static readonly BindableProperty EditModeProperty =
          BindableProperty.Create(nameof(EditMode), typeof(Mode), typeof(RouteSetupView), Mode.Move,
@@ -97,12 +81,12 @@ namespace ClimbersHangout.UI.Common.Views {
       private void VerifyPanningInBounds() {
          var boundWidth = lastCanvasSize.Width / scaleFactor;
          var boundHeight = lastCanvasSize.Height / scaleFactor;
-         float x = (float)Math.Min(bitmap.Width - boundWidth, topLeftPoint.X);
+         float x = (float)Math.Min(bitmap.Width - boundWidth, originPoint.X);
          x = Math.Max(0, x);
-         float y = (float)Math.Min(bitmap.Height - boundHeight, topLeftPoint.Y);
+         float y = (float)Math.Min(bitmap.Height - boundHeight, originPoint.Y);
          y = Math.Max(0, y);
 
-         topLeftPoint = new SKPoint(x, y);
+         originPoint = new Point(x, y);
       }
 
       /// <summary>
@@ -149,15 +133,8 @@ namespace ClimbersHangout.UI.Common.Views {
       /// Reloads image background from ImageLocation.
       /// </summary>
       private void InitImage() {
-         using (SKStream stream = new SKManagedStream(File.OpenRead(ImageLocation))) {
-            bitmap = SKBitmap.Decode(stream);
-         }
-
-         var bitmapAspectRatio = (double)bitmap.Width / bitmap.Height;
-         double factor = bitmapAspectRatio > 1 ? INITIAL_MAX_SIZE / bitmap.Width : INITIAL_MAX_SIZE / bitmap.Height;
-
-         SKImageInfo info = new SKImageInfo((int)(bitmap.Width * factor), (int)(bitmap.Height * factor));
-         bitmap = bitmap.Resize(info, SKBitmapResizeMethod.Triangle);
+         bitmap = SkiaSharpHelper.LoadBitmap(ImageLocation, Route.MAX_SIZE);
+         route.ImageLocation = ImageLocation;
       }
 
       /// <summary>
@@ -242,13 +219,13 @@ namespace ClimbersHangout.UI.Common.Views {
       private void ManageHolds(TouchManipulationInfo[] infos, SKTouchAction type) {
          if (EditMode == Mode.Hold) {
             var currentPoint = new Point(
-               infos[0].NewPoint.X / scaleFactor + topLeftPoint.X,
-               infos[0].NewPoint.Y / scaleFactor + topLeftPoint.Y);
+               infos[0].NewPoint.X / scaleFactor + originPoint.X,
+               infos[0].NewPoint.Y / scaleFactor + originPoint.Y);
             double radius = 20d;
             if (infos.Length > 1) {
                radius = 20
-                        + CalculateDistance(infos[0].NewPoint, infos[1].NewPoint)
-                        - CalculateDistance(infos[0].InitialPoint, infos[1].InitialPoint);
+                        + infos[0].NewPoint.Distance(infos[1].NewPoint)
+                        - infos[0].InitialPoint.Distance(infos[1].InitialPoint);
                radius = radius < 20 ? 20 : radius;
             } else if (inProgressHold != null) {
                //if current hold have already been enlarged
@@ -258,7 +235,7 @@ namespace ClimbersHangout.UI.Common.Views {
             switch (type) {
                case SKTouchAction.Pressed:
                   if (inProgressHold == null) {
-                     inProgressHold = GetNearestHoldOrNew(currentPoint);
+                     inProgressHold = route.GetNearestHoldOrNew(currentPoint);
                      inProgressHold.Center = currentPoint;
                      inProgressHold.Radius = radius;
                      InvalidateSurface();
@@ -273,9 +250,7 @@ namespace ClimbersHangout.UI.Common.Views {
                   //only if all fingers are released, the in progress hold
                   //is counted as completed
                   if (infos.Count() <= 1) {
-                     if (!completedHolds.Contains(inProgressHold)) {
-                        completedHolds.Add(inProgressHold);
-                     }
+                     route.AddHold(inProgressHold);
                      inProgressHold = null;
                   }
                   InvalidateSurface();
@@ -291,44 +266,27 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       /// <summary>
-      /// Gets a point within NEAREST_HOLD_DISTANCE
-      /// </summary>
-      /// <param name="point"></param>
-      /// <returns></returns>
-      private Hold GetNearestHoldOrNew(Point point) {
-         Hold hold = null;
-         foreach (var currentHold in completedHolds) {
-            if (currentHold.Center.Distance(point) < NEAREST_HOLD_DISTANCE) {
-               hold = currentHold;
-               break;
-            }
-         }
-
-         return hold ?? new Hold() { Color = Color.Crimson };
-      }
-
-      /// <summary>
       /// Process touch event in Lines EditMode
       /// </summary>
       /// <param name="infos"></param>
       /// <param name="type"></param>
       private void ManageLines(TouchManipulationInfo[] infos, SKTouchAction type) {
          if (EditMode == Mode.Line) {
-            var currentPoint = new SKPoint(
-               (float)(infos[0].NewPoint.X / scaleFactor + topLeftPoint.X),
-               (float)(infos[0].NewPoint.Y / scaleFactor + topLeftPoint.Y));
+            var currentPoint = new Point(
+               (float)(infos[0].NewPoint.X / scaleFactor + originPoint.X),
+               (float)(infos[0].NewPoint.Y / scaleFactor + originPoint.Y));
             switch (type) {
                case SKTouchAction.Pressed:
-                  inProgressPath = new SKPath();
-                  inProgressPath.MoveTo(currentPoint);
+                  inProgressPath = new Path();
+                  inProgressPath.AddPoint(currentPoint);
                   InvalidateSurface();
                   break;
                case SKTouchAction.Moved:
-                  inProgressPath.LineTo(currentPoint);
+                  inProgressPath.AddPoint(currentPoint);
                   InvalidateSurface();
                   break;
                case SKTouchAction.Released:
-                  completedPaths.Add(inProgressPath);
+                  route.AddPath(inProgressPath);
                   inProgressPath = null;
                   InvalidateSurface();
                   break;
@@ -349,13 +307,15 @@ namespace ClimbersHangout.UI.Common.Views {
          if (infos.Length == 1) {
             switch (type) {
                case SKTouchAction.Pressed:
-                  startPanTopLeftPoint = topLeftPoint;
+                  startPanTopLeftPoint = originPoint;
                   break;
                case SKTouchAction.Moved:
                   double totalX = (infos[0].NewPoint.X - infos[0].InitialPoint.X) / scaleFactor;
                   double totalY = (infos[0].NewPoint.Y - infos[0].InitialPoint.Y) / scaleFactor;
-                  topLeftPoint = new SKPoint((float)(startPanTopLeftPoint.X - totalX),
-                     (float)(startPanTopLeftPoint.Y - totalY));
+                  originPoint = new Point(
+                     startPanTopLeftPoint.X - totalX,
+                     startPanTopLeftPoint.Y - totalY);
+
                   VerifyPanningInBounds();
                   InvalidateSurface();
                   break;
@@ -364,14 +324,14 @@ namespace ClimbersHangout.UI.Common.Views {
                   InvalidateSurface();
                   break;
                case SKTouchAction.Cancelled:
-                  topLeftPoint = startPanTopLeftPoint;
+                  originPoint = startPanTopLeftPoint;
                   VerifyPanningInBounds();
                   InvalidateSurface();
                   break;
             }
          } else {
-            double initialDistance = CalculateDistance(infos[0].InitialPoint, infos[1].InitialPoint);
-            double distance = CalculateDistance(infos[0].NewPoint, infos[1].NewPoint);
+            double initialDistance = infos[0].InitialPoint.Distance(infos[1].InitialPoint);
+            double distance = infos[0].NewPoint.Distance(infos[1].NewPoint);
             double scale = distance / initialDistance;
             switch (type) {
                case SKTouchAction.Pressed:
@@ -396,53 +356,6 @@ namespace ClimbersHangout.UI.Common.Views {
          }
       }
 
-      /// <summary>
-      /// Normalizes path depending on top-left offset and scale factor.
-      /// </summary>
-      /// <param name="path"></param>
-      /// <returns></returns>
-      private SKPath NormalizePath(SKPath path) {
-         var normalizedPath = new SKPath();
-         if (path.PointCount > 0) {
-            SKPoint firstPoint = path.Points[0];
-            normalizedPath.MoveTo(NormalizePoint(firstPoint));
-
-            if (path.PointCount >= 3) {
-               for (int i = 2; i < path.PointCount; i++) {
-                  var point1 = NormalizePoint(path.Points[i - 2]);
-                  var point2 = NormalizePoint(path.Points[i - 1]);
-                  var point3 = NormalizePoint(path.Points[i]);
-                  normalizedPath.CubicTo(point1, point2, point3);
-               }
-            } else {
-               foreach (SKPoint point in path.Points) {
-                  normalizedPath.LineTo(NormalizePoint(point));
-               }
-            }
-         }
-
-         return normalizedPath;
-      }
-
-      /// <summary>
-      /// Normalizes point depending on top-left offset and scale factor.
-      /// </summary>
-      /// <param name="point"></param>
-      /// <returns></returns>
-      private SKPoint NormalizePoint(SKPoint point) {
-         return new SKPoint((float)((point.X - topLeftPoint.X) * scaleFactor), (float)((point.Y - topLeftPoint.Y) * scaleFactor));
-      }
-
-      /// <summary>
-      /// Calculates distance between two skpoints.
-      /// </summary>
-      /// <param name="p1"></param>
-      /// <param name="p2"></param>
-      /// <returns></returns>
-      private double CalculateDistance(SKPoint p1, SKPoint p2) {
-         return Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
-      }
-
       protected override void OnPaintSurface(SKPaintSurfaceEventArgs e) {
          base.OnPaintSurface(e);
 
@@ -458,16 +371,16 @@ namespace ClimbersHangout.UI.Common.Views {
 
          DrawHolds(canvas);
 
-         DrawLines(canvas);
+         DrawPaths(canvas);
       }
 
-      private void DrawLines(SKCanvas canvas) {
-         foreach (SKPath path in completedPaths) {
-            canvas.DrawPath(NormalizePath(path), completedPaint);
+      private void DrawPaths(SKCanvas canvas) {
+         foreach (Path path in route.Paths) {
+            canvas.DrawPath(path.ConvertToSKPath(originPoint, scaleFactor), SkiaSharpHelper.CompletedPaint);
          }
 
          if (null != inProgressPath) {
-            canvas.DrawPath(NormalizePath(inProgressPath), inProgressPaint);
+            canvas.DrawPath(inProgressPath.ConvertToSKPath(originPoint, scaleFactor), SkiaSharpHelper.InProgressPaint);
          }
       }
 
@@ -481,7 +394,7 @@ namespace ClimbersHangout.UI.Common.Views {
             };
 
             var source = new SKRect() {
-               Location = topLeftPoint,
+               Location = new SKPoint((float)originPoint.X, (float)originPoint.Y),
                Size = new SKSize(
                   (float)(bounds.Width / scaleFactor),
                   (float)(bounds.Height / scaleFactor))
@@ -492,21 +405,21 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       private void DrawHolds(SKCanvas canvas) {
-         foreach (var hold in completedHolds) {
+         foreach (var hold in route.Holds) {
             if (hold != inProgressHold) {
-               DrawHold(canvas, hold, completedPaint);
+               DrawHold(canvas, hold, SkiaSharpHelper.CompletedPaint);
             }
          }
 
          if (null != inProgressHold) {
-            DrawHold(canvas, inProgressHold, inProgressPaint);
+            DrawHold(canvas, inProgressHold, SkiaSharpHelper.InProgressPaint);
          }
       }
 
       private void DrawHold(SKCanvas canvas, Hold hold, SKPaint paint) {
          canvas.DrawCircle(
-            (float)((hold.Center.X - topLeftPoint.X) * scaleFactor),
-            (float)((hold.Center.Y - topLeftPoint.Y) * scaleFactor),
+            (float)((hold.Center.X - originPoint.X) * scaleFactor),
+            (float)((hold.Center.Y - originPoint.Y) * scaleFactor),
             (float)(hold.Radius * scaleFactor),
             paint);
       }
@@ -515,12 +428,6 @@ namespace ClimbersHangout.UI.Common.Views {
          Move,
          Line,
          Hold
-      }
-
-      private class Hold {
-         public double Radius { get; set; }
-         public Point Center { get; set; }
-         public Color Color { get; set; }
       }
 
       private class TouchManipulationInfo {
