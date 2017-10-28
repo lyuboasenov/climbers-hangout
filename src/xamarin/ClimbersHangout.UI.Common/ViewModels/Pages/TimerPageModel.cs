@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
-   public class TimerPageModel : FreshBasePageModel {
+   public class TimerPageModel : BasePageModel {
 
       private TrainingRunner runner;
       private Command startCommand;

@@ -11,6 +11,10 @@ namespace ClimbersHangout.Core.Models.Routes {
       private readonly List<Hold> holds = new List<Hold>();
       private readonly List<Path> paths = new List<Path>();
 
+      public string Name { get; set; }
+      public string Description { get; set; }
+      public RouteType Type { get; set; }
+      public Grade Grade { get; set; }
       public GpsPosition Position { get; set; }
       public List<Hold> Holds { get { return holds; } }
       public List<Path> Paths { get { return paths; } }

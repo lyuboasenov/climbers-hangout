@@ -61,6 +61,42 @@ namespace ClimbersHangout.UI.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        public static string AddRouteDetailsPageTitle {
+            get {
+                return ResourceManager.GetString("AddRouteDetailsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema.
+        /// </summary>
+        public static string AddRouteSchemaPageTitle {
+            get {
+                return ResourceManager.GetString("AddRouteSchemaPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        public static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Repetitions.
         /// </summary>
         public static string RepetiionCount {

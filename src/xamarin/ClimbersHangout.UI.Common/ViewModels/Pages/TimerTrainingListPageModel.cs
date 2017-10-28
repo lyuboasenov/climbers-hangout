@@ -1,16 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
-using ClimbersHangout.Core.Models;
+﻿using ClimbersHangout.Core.Models;
 using ClimbersHangout.Core.Services;
-using FreshMvvm;
-using Plugin.Media;
-using Plugin.Media.Abstractions;
+using ClimbersHangout.UI.Common.ViewModels.Pages.Routes;
 using PropertyChanged;
 using Xamarin.Forms;
+using ClimbersHangout.UI.Common.Helpers;
+using ClimbersHangout.UI.Common.Resources;
+using FreshMvvm;
+using Xamarin.Forms.BehaviorsPack;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
-   public class TimerTrainingListPageModel : FreshBasePageModel {
+   public class TimerTrainingListPageModel : BasePageModel {
 
       private Command addTrainingCommand;
 
@@ -34,46 +34,18 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
       }
 
       private async void AddTraining() {
-         var result = await CurrentPage.DisplayActionSheet("Add route", "Cancel", null, new[] { "Take photo", "From gallery" });
-         MediaFile image;
-         if (result == "Take photo") {
-            image = await TakeImage();
+         var imageFile = await this.TakeOrPickImage();
+         if (null != imageFile) {
+            //await CoreMethods.PushPageModel<AddRoutePageModel>(imageFile, true);
+            var tabbedNavContainer = new FreshTabbedNavigationContainer();
+            tabbedNavContainer.AddTab<RouteDetailsPageModel>(Strings.AddRouteDetailsPageTitle, null);
+            tabbedNavContainer.AddTab<RouteSchemaPageModel>(Strings.AddRouteSchemaPageTitle, null);
+
+            await CoreMethods.PushNewNavigationServiceModal(tabbedNavContainer, null);
+
          } else {
-            image = await PickImageFromGallery();
+            await CoreMethods.DisplayAlert("Error", "No image selected!", string.Empty);
          }
-
-         if (image != null) {
-            await CoreMethods.PushPageModel<ManageRoutePageModel>(image, true);
-         }
-      }
-
-      private async Task<MediaFile> PickImageFromGallery() {
-         MediaFile result = null;
-
-         await CrossMedia.Current.Initialize();
-         if (CrossMedia.Current.IsPickPhotoSupported) {
-            result = await CrossMedia.Current.PickPhotoAsync();
-         }
-
-         return result;
-      }
-
-      private async Task<MediaFile> TakeImage() {
-         MediaFile result = null;
-
-         await CrossMedia.Current.Initialize();
-         if (CrossMedia.Current.IsCameraAvailable
-            && CrossMedia.Current.IsTakePhotoSupported) {
-            result = await CrossMedia.Current.TakePhotoAsync(
-               new StoreCameraMediaOptions() {
-                  PhotoSize = PhotoSize.Full,
-                  MaxWidthHeight = 2048,
-                  Name = Guid.NewGuid().ToString("N"),
-                  DefaultCamera = CameraDevice.Rear,
-               });
-         }
-
-         return result;
       }
    }
 }

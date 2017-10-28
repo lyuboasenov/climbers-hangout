@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseTabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
+             xmlns:resources="clr-namespace:ClimbersHangout.UI.Common.Resources;assembly=ClimbersHangout.UI.Common"
+             xmlns:routes="clr-namespace:ClimbersHangout.UI.Common.Pages.Routes;assembly=ClimbersHangout.UI.Common"
+             x:Class="ClimbersHangout.UI.Common.Pages.Routes.AddRoutePage">
+   <!--Pages can be added as references or inline-->
+   <routes:RouteDetailsPage Title = "{x:Static resources:Strings.AddRouteDetailsPageTitle}" />
+   <routes:RouteSchemaPage Title = "{x:Static resources:Strings.AddRouteSchemaPageTitle}" />
+</pages:BaseTabbedPage>

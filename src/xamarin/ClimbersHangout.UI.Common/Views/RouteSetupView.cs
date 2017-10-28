@@ -79,14 +79,16 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       private void VerifyPanningInBounds() {
-         var boundWidth = lastCanvasSize.Width / scaleFactor;
-         var boundHeight = lastCanvasSize.Height / scaleFactor;
-         float x = (float)Math.Min(bitmap.Width - boundWidth, originPoint.X);
-         x = Math.Max(0, x);
-         float y = (float)Math.Min(bitmap.Height - boundHeight, originPoint.Y);
-         y = Math.Max(0, y);
+         if (null != bitmap) {
+            var boundWidth = lastCanvasSize.Width / scaleFactor;
+            var boundHeight = lastCanvasSize.Height / scaleFactor;
+            float x = (float)Math.Min(bitmap.Width - boundWidth, originPoint.X);
+            x = Math.Max(0, x);
+            float y = (float)Math.Min(bitmap.Height - boundHeight, originPoint.Y);
+            y = Math.Max(0, y);
 
-         originPoint = new Point(x, y);
+            originPoint = new Point(x, y);
+         }
       }
 
       /// <summary>
@@ -107,14 +109,16 @@ namespace ClimbersHangout.UI.Common.Views {
       ///that the whole are of the control is covered
       /// </summary>
       private void RecalculateMinimumScaleFactor() {
-         double boundsAspectRatio = CanvasSize.Width / CanvasSize.Height;
-         double widthAspect = CanvasSize.Width / bitmap.Width;
-         double bitmapAspectRatio = (double)bitmap.Width / bitmap.Height;
+         if (null != bitmap) {
+            double boundsAspectRatio = CanvasSize.Width / CanvasSize.Height;
+            double widthAspect = CanvasSize.Width / bitmap.Width;
+            double bitmapAspectRatio = (double)bitmap.Width / bitmap.Height;
 
-         minimumScaleFactor = Math.Max(widthAspect, (bitmapAspectRatio / boundsAspectRatio) * widthAspect);
-         minimumScaleFactor = Math.Max(ABSOLUTE_MIN_SCALE_FACTOR, minimumScaleFactor);
+            minimumScaleFactor = Math.Max(widthAspect, (bitmapAspectRatio / boundsAspectRatio) * widthAspect);
+            minimumScaleFactor = Math.Max(ABSOLUTE_MIN_SCALE_FACTOR, minimumScaleFactor);
 
-         VerifyScaleFactorInBounds();
+            VerifyScaleFactorInBounds();
+         }
       }
 
       /// <summary>

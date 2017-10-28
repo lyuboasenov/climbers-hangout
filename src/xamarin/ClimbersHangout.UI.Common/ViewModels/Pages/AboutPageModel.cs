@@ -6,6 +6,6 @@ using PropertyChanged;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
-   public class AboutPageModel : FreshBasePageModel {
+   public class AboutPageModel : BasePageModel {
    }
 }

@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddRouteDetailsPageTitle" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="AddRouteSchemaPageTitle" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="RepetiionCount" xml:space="preserve">
     <value>Repetitions</value>
   </data>
