@@ -5,8 +5,6 @@ using PropertyChanged;
 using Xamarin.Forms;
 using ClimbersHangout.UI.Common.Helpers;
 using ClimbersHangout.UI.Common.Resources;
-using FreshMvvm;
-using Xamarin.Forms.BehaviorsPack;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
@@ -36,15 +34,9 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
       private async void AddTraining() {
          var imageFile = await this.TakeOrPickImage();
          if (null != imageFile) {
-            //await CoreMethods.PushPageModel<AddRoutePageModel>(imageFile, true);
-            var tabbedNavContainer = new FreshTabbedNavigationContainer();
-            tabbedNavContainer.AddTab<RouteDetailsPageModel>(Strings.AddRouteDetailsPageTitle, null);
-            tabbedNavContainer.AddTab<RouteSchemaPageModel>(Strings.AddRouteSchemaPageTitle, null);
-
-            await CoreMethods.PushNewNavigationServiceModal(tabbedNavContainer, null);
-
+            await CoreMethods.PushPageModel<AddRoutePageModel>(imageFile, true);
          } else {
-            await CoreMethods.DisplayAlert("Error", "No image selected!", string.Empty);
+            await CoreMethods.DisplayAlert(Strings.Error, "No image selected!", Strings.Ok);
          }
       }
    }

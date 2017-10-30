@@ -1,16 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using ClimbersHangout.UI.Common.Resources;
 using ClimbersHangout.UI.Common.ViewModels.Pages;
-using ClimbersHangout.UI.Common.ViewModels.Pages.Routes;
 using FreshMvvm;
 using SlideOverKit;
 using Xamarin.Forms;
 
 namespace ClimbersHangout.UI.Common.Pages {
    public class BaseTabbedPage : TabbedPage, IMenuContainerPage {
+      public static readonly BindableProperty ChildPagesProperty =
+         BindableProperty.Create(nameof(ChildPages), typeof(IEnumerable<Page>), typeof(BaseTabbedPage), null,
+            propertyChanged: OnChildPagesChanged);
+
+      private static void OnChildPagesChanged(BindableObject bindable, object oldvalue, object newvalue) {
+         ((BaseTabbedPage) bindable).OnChildPagesChanged();
+      }
+
+      private void OnChildPagesChanged() {
+         Children.Clear();
+         if (null != ChildPages) {
+            foreach (var childPage in ChildPages) {
+               Children.Add(childPage);
+            }
+         }
+      }
+
       SlideMenuView slideMenu;
+
+      public IEnumerable<Page> ChildPages { get { return (IEnumerable<Page>) GetValue(ChildPagesProperty); } set{SetValue(ChildPagesProperty, value);} }
 
       public BaseTabbedPage() {
          PopupViews = new Dictionary<string, SlidePopupView>();
@@ -28,12 +44,9 @@ namespace ClimbersHangout.UI.Common.Pages {
             var context = Activator.CreateInstance(type);
             (context as BasePageModel).CurrentPage = this;
             BindingContext = context;
-            SetupTabs();
          }
-      }
-
-      private void SetupTabs() {
-
+         
+         SetBinding(ChildPagesProperty, new Binding("Pages"));
       }
 
       public SlideMenuView SlideMenu {

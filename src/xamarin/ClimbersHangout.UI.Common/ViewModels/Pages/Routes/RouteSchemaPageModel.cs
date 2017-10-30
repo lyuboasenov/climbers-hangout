@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
 using ClimbersHangout.UI.Common.Views;
-using FreshMvvm;
-using Plugin.Media;
 using Plugin.Media.Abstractions;
 using PropertyChanged;
 
@@ -10,22 +7,20 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
    [AddINotifyPropertyChangedInterface]
    public class RouteSchemaPageModel : BasePageModel {
       private MediaFile imageFile;
-      private bool removeImageOnExit = false;
 
       public RouteSetupView.Mode Mode { get; set; }
       public string ImageLocation { get; set; }
       public int ModeSelectIndex { get; set; }
+      
+      public override void Init(object initData) {
+         base.Init(initData);
+         imageFile = initData as MediaFile;
 
-      public RouteSchemaPageModel() {
-      }
+         if (null == imageFile) {
+            throw new ArgumentNullException("No image file supplied.");
+         }
 
-      protected override void ViewIsAppearing(object sender, EventArgs e) {
-         base.ViewIsAppearing(sender, e);
-         InitImage();
-      }
-
-      private void InitImage() {
-
+         ImageLocation = imageFile.Path;
       }
 
       public void OnModeSelectIndexChanged() {
