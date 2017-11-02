@@ -1,4 +1,7 @@
-﻿using ClimbersHangout.Core.Models;
+﻿using System;
+using System.Collections.Generic;
+using ClimbersHangout.Core.Models;
+using ClimbersHangout.Core.Models.Routes;
 using ClimbersHangout.Core.Services;
 using ClimbersHangout.UI.Common.ViewModels.Pages.Routes;
 using PropertyChanged;
@@ -10,7 +13,8 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
    [AddINotifyPropertyChangedInterface]
    public class TimerTrainingListPageModel : BasePageModel {
 
-      private Command addTrainingCommand;
+      private Command timerCommand;
+      private Command<RouteType> addRouteCommand;
 
       public TimerTrainingListPageModel() {
          TrainingList = TimeTrainingService.GetAllTrainings();
@@ -20,8 +24,12 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
 
       public PeriodGroup SelectedTraining { get; set; }
 
-      public Command AddTrainingCommand {
-         get { return addTrainingCommand ?? (addTrainingCommand = new Command(AddTraining)); }
+      public Command TimerCommand {
+         get { return timerCommand ?? (timerCommand = new Command(Timer)); }
+      }
+
+      public Command<RouteType> AddRouteCommand {
+         get { return addRouteCommand ?? (addRouteCommand = new Command<RouteType>(AddRoute)); }
       }
 
       public void OnSelectedTrainingChanged() {
@@ -31,10 +39,21 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
          }
       }
 
-      private async void AddTraining() {
+      private async void Timer() {
+         await CoreMethods.PushPageModel<TimerSetupPageModel>(true);
+      }
+
+      private async void AddRoute(RouteType routeType) {
          var imageFile = await this.TakeOrPickImage();
          if (null != imageFile) {
-            await CoreMethods.PushPageModel<AddRoutePageModel>(imageFile, true);
+            var position = MediaHelper.GetImageGpsLocation(imageFile) ?? await GpsHelper.GetCurrentPosition(false);
+            var routeTemplate = new Route() {
+               ImageLocation = imageFile.Path,
+               Position = new GpsPosition(position.Latitude, position.Longitude),
+               Type = routeType
+            };
+
+            await CoreMethods.PushPageModel<AddRoutePageModel>(routeTemplate, true);
          } else {
             await CoreMethods.DisplayAlert(Strings.Error, "No image selected!", Strings.Ok);
          }

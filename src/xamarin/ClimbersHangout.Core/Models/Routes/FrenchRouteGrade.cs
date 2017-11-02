@@ -47,6 +47,16 @@ namespace ClimbersHangout.Core.Models.Routes {
       public static readonly FrenchRouteGrade f9c = new FrenchRouteGrade(220, "9c");
       public static readonly FrenchRouteGrade f9cPlus = new FrenchRouteGrade(225, "9c+");
 
+      public static readonly Grade[] Grades = new Grade[] {
+         f3a, f3aPlus, f3b, f3bPlus, f3c, f3cPlus,
+         f4a, f4aPlus, f4b, f4bPlus, f4c, f4cPlus,
+         f5a, f5aPlus, f5b, f5bPlus, f5c, f5cPlus,
+         f6a, f6aPlus, f6b, f6bPlus, f6c, f6cPlus,
+         f7a, f7aPlus, f7b, f7bPlus, f7c, f7cPlus,
+         f8a, f8aPlus, f8b, f8bPlus, f8c, f8cPlus,
+         f9a, f9aPlus, f9b, f9bPlus, f9c, f9cPlus
+      };
+
       private FrenchRouteGrade(int absoluteValue, string name) : base(absoluteValue, RouteType.SportRoute | RouteType.TradRoute, name) {
 
       }

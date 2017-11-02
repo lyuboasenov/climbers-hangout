@@ -2,8 +2,8 @@
 <pages:BaseContentPage  xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
-             xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              xmlns:resources="clr-namespace:ClimbersHangout.UI.Common.Resources;assembly=ClimbersHangout.UI.Common"
+             xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
              x:Class="ClimbersHangout.UI.Common.Pages.Routes.RouteDetailsPage">
    <pages:BaseContentPage.Content>
       <Grid>
@@ -12,6 +12,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
          </Grid.RowDefinitions>
          <Entry 
             Grid.Row="0"     
@@ -26,8 +27,25 @@
             ItemsSource="{Binding GradeList}" 
             SelectedItem="{Binding SelectedGrade, Mode=TwoWay}" 
             ItemDisplayBinding="{Binding Name}" />
-         <maps:Map 
-            Grid.Row="3" />
+         <views:BindableMap
+            Grid.Row="3" 
+            MapType="Hybrid"
+            HasScrollEnabled="True" 
+            HasZoomEnabled="True"
+            CurrentLocation="{Binding CurrentLocation, Mode=TwoWay}"
+            BindableVisibleRegion="{Binding VisibleRegion}"/>
+         <StackLayout
+            Grid.Row="4"
+            Orientation="Horizontal">
+            <views:FontIconButton
+               Icon="Check"
+               Command="{Binding OkCommand}" 
+               HorizontalOptions="End"/>
+            <views:FontIconButton
+               Icon="Xing"
+               Command="{Binding CancelCommand}"
+               HorizontalOptions="End"/>
+         </StackLayout>
       </Grid>
    </pages:BaseContentPage.Content>
 </pages:BaseContentPage>

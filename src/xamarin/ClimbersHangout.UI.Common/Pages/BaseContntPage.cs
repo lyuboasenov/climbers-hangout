@@ -27,6 +27,16 @@ namespace ClimbersHangout.UI.Common.Pages {
             (context as BasePageModel).CurrentPage = this;
             BindingContext = context;
          }
+
+         if (null != SlideMenu) {
+            SlideMenu.BindingContext = this.BindingContext;
+         }
+
+         if (null != PopupViews) {
+            foreach (var popupView in PopupViews.Values) {
+               popupView.BindingContext = this.BindingContext;
+            }
+         }
       }
    }
 }

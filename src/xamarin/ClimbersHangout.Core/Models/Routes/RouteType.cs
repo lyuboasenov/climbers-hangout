@@ -7,6 +7,7 @@ namespace ClimbersHangout.Core.Models.Routes {
    public enum RouteType {
       Boulder = 1,
       SportRoute = 2,
-      TradRoute = 4
+      TradRoute = 4,
+      IndoorBoulder = 8,
    }
 }

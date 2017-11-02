@@ -44,8 +44,9 @@ namespace ClimbersHangout.UI.Common.Views {
       }
 
       protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint) {
-         double sizeConstraint = Math.Min(widthConstraint, heightConstraint);
-         return base.OnMeasure(sizeConstraint, sizeConstraint);
+         //         double sizeConstraint = Math.Min(widthConstraint, heightConstraint);
+         //         return base.OnMeasure(sizeConstraint, sizeConstraint);
+         return base.OnMeasure(widthConstraint, heightConstraint);
       }
    }
 }

@@ -88,6 +88,15 @@ namespace ClimbersHangout.UI.Common.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current location.
+        /// </summary>
+        public static string CurrentLocation {
+            get {
+                return ResourceManager.GetString("CurrentLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
         public static string Description {

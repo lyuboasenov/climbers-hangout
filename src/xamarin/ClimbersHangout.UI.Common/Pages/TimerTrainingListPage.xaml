@@ -3,30 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
              xmlns:slideOverKit="clr-namespace:SlideOverKit;assembly=SlideOverKit"
+             xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
+             xmlns:routes="clr-namespace:ClimbersHangout.Core.Models.Routes;assembly=ClimbersHangout.Core"
              x:Class="ClimbersHangout.UI.Common.Pages.TimerTrainingListPage">
    <pages:BaseContentPage.SlideMenu>
       <slideOverKit:SlideMenuView
             IsFullScreen="False"
-            BackgroundViewColor="White"
+            BackgroundViewColor="Transparent"
             BackgroundColor="#C82630"
             MenuOrientations="BottomToTop"
             WidthRequest="50"
-            HeightRequest="200"
-            DraggerButtonHeight="30"
+            HeightRequest="250"
+            DraggerButtonHeight="50"
             LeftMargin="100"
             >
          <StackLayout
-                Orientation="Vertical"
-                Spacing="15"
-                Padding="0, 5">
-            <Image 
-                    Source="editor_list_view_hambuger_menu_outline_stroke.png" 
-                    HeightRequest="25"
-                    WidthRequest="25"/>
-            <Image 
-                    Source="circle_add_plus_new_outline_stroke.png" 
-                    HeightRequest="25"
-                    WidthRequest="25"/>
+                Orientation="Vertical">
+            <views:FontIcon
+               Icon="Plus" 
+               Margin="20, 20, 0, 0"
+               HeightRequest="50" />
+            <views:FontIconButton 
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.Boulder}"
+               Icon="Apple" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.SportRoute}"
+               Icon="Anchor" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.IndoorBoulder}"
+               Icon="Bomb" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding TimerCommand}"
+               Icon="ClockO" 
+               HeightRequest="50"/>
          </StackLayout>
       </slideOverKit:SlideMenuView>
    </pages:BaseContentPage.SlideMenu>
@@ -34,7 +49,6 @@
       <Grid>
          <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
          </Grid.RowDefinitions>
          <ListView ItemsSource="{Binding TrainingList}"
                   SelectedItem="{Binding SelectedTraining, Mode=TwoWay}">
@@ -44,7 +58,6 @@
                </DataTemplate>
             </ListView.ItemTemplate>
          </ListView>
-         <Button Grid.Row="1" Command="{Binding AddTrainingCommand}" />
       </Grid>
    </pages:BaseContentPage.Content>
 </pages:BaseContentPage>

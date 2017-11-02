@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ClimbersHangout.Core.Models.Routes {
+﻿namespace ClimbersHangout.Core.Models.Routes {
    public class FontBoulderGrade : Grade {
       public static readonly FontBoulderGrade F3 = new FontBoulderGrade(20, "3");
       public static readonly FontBoulderGrade F4Minus = new FontBoulderGrade(25, "4-");
@@ -30,6 +26,15 @@ namespace ClimbersHangout.Core.Models.Routes {
       public static readonly FontBoulderGrade F8C = new FontBoulderGrade(135, "8C");
       public static readonly FontBoulderGrade F8CPlus = new FontBoulderGrade(140, "8C+");
       public static readonly FontBoulderGrade F9A = new FontBoulderGrade(145, "9A");
+
+      public static readonly Grade[] Grades = new Grade[] {
+         F3, F4Minus, F4, F4Plus,
+         F5Minus, F5, F5Plus,
+         F6A, F6APlus, F6B, F6BPlus, F6C, F6CPlus,
+         F7A, F7APlus, F7B, F7BPlus, F7C, F7CPlus,
+         F8A, F8APlus, F8B, F8BPlus, F8C, F8CPlus,
+         F9A
+      };
 
       private FontBoulderGrade(int absoluteValue, string name) : base(absoluteValue, RouteType.Boulder, name) { }
    }

@@ -9,9 +9,10 @@
          <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="Auto"/>
          </Grid.RowDefinitions>
          <views:RouteSetupView 
-            ImageLocation="{Binding ImageLocation}"
+            Route="{Binding Route}"
             EditMode="{Binding Mode}"/>
          <views:FontIconSegmentedButtonGroup
                Grid.Row="1"
@@ -22,6 +23,18 @@
                <views:FontIconSegmentedButton Icon="LineChart" />
             </views:FontIconSegmentedButtonGroup.SegmentedButtons>
          </views:FontIconSegmentedButtonGroup>
+         <StackLayout
+            Grid.Row="2"
+            Orientation="Horizontal">
+            <views:FontIconButton
+               Icon="Check"
+               Command="{Binding OkCommand}" 
+               HorizontalOptions="End"/>
+            <views:FontIconButton
+               Icon="Xing"
+               Command="{Binding CancelCommand}"
+               HorizontalOptions="End"/>
+         </StackLayout>
       </Grid>
    </pages:BaseContentPage.Content>
 </pages:BaseContentPage>

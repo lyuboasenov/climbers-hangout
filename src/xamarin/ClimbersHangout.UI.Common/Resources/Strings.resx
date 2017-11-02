@@ -126,6 +126,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="CurrentLocation" xml:space="preserve">
+    <value>Current location</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>

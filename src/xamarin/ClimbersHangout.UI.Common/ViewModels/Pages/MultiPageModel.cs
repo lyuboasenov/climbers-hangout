@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using ClimbersHangout.UI.Common.Pages.Routes;
 using FreshMvvm;
 using PropertyChanged;
 using Xamarin.Forms;
@@ -18,7 +16,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
             Title = title,
             PageModel = pageModel,
             Data = data,
-            Page = FreshPageModelResolver.ResolvePageModel(pageModel.GetType(), data)
+            Page = FreshPageModelResolver.ResolvePageModel(pageModel.GetType(), data, pageModel)
          };
 
          child.Page.Title = child.Title;
