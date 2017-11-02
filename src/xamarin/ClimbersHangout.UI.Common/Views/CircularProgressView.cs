@@ -1,5 +1,6 @@
 ﻿using System;
 using ClimbersHangout.UI.Common.Helpers;
+using ClimbersHangout.Core.Helpers;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -96,7 +97,7 @@ namespace ClimbersHangout.UI.Common.Views {
             using (var paint = new SKPaint {
                Style = SKPaintStyle.Stroke,
                StrokeWidth = strokeWidth,
-               Color = ColorHelper.TranslateColor(color).WithAlpha(52),
+               Color = color.ToSKColor().WithAlpha(52),
                IsAntialias = true,
             }) {
                canvas.DrawCircle(cx, cy, radius, paint);
@@ -105,7 +106,7 @@ namespace ClimbersHangout.UI.Common.Views {
 
          private static void DrawGauge(SKCanvas canvas, float radius, int cx, int cy,
             float strokeWidth, Color color, double progress, double minimum, double maximum) {
-            var skColor = ColorHelper.TranslateColor(color);
+            var skColor = color.ToSKColor();
             var actualProgress = (Math.Abs(progress) - minimum) / maximum;
             var sweepAngle = (float)(360 * actualProgress);
             var startAngle = 270;

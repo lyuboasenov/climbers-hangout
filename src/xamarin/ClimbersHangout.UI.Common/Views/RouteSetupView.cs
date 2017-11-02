@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClimbersHangout.Core.Models.Routes;
-using ClimbersHangout.UI.Common.Helpers;
+using ClimbersHangout.Core.Helpers;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
@@ -13,6 +13,9 @@ namespace ClimbersHangout.UI.Common.Views {
    public class RouteSetupView : SKCanvasView {
       private const double ABSOLUTE_MIN_SCALE_FACTOR = 1;
       private const double ABSOLUTE_MAX_SCALE_FACTOR = 4;
+
+      private static readonly Color completedColor = Color.White;
+      private static readonly Color inProgressColor = Color.Red;
 
       private Path inProgressPath;
       private Hold inProgressHold;
@@ -58,7 +61,7 @@ namespace ClimbersHangout.UI.Common.Views {
          BindableProperty.Create(nameof(EditMode), typeof(Mode), typeof(RouteSetupView), Mode.Move);
 
       public static readonly BindableProperty RouteProperty =
-         BindableProperty.Create(nameof(Route), typeof(Route), typeof(RouteSetupView), null,
+         BindableProperty.Create(nameof(Route), typeof(RouteTemplate), typeof(RouteSetupView), null,
             propertyChanged: OnRouteChanged);
 
       public Mode EditMode {
@@ -66,8 +69,8 @@ namespace ClimbersHangout.UI.Common.Views {
          set { if (EditMode != value) { SetValue(EditModeProperty, value); } }
       }
 
-      public Route Route {
-         get { return (Route)GetValue(RouteProperty); }
+      public RouteTemplate Route {
+         get { return (RouteTemplate)GetValue(RouteProperty); }
          set { if (Route != value) { SetValue(RouteProperty, value); } }
       }
 
@@ -134,7 +137,7 @@ namespace ClimbersHangout.UI.Common.Views {
       /// Reloads image background from ImageLocation.
       /// </summary>
       private void InitImage() {
-         bitmap = SkiaSharpHelper.LoadBitmap(Route.ImageLocation, Route.MAX_SIZE);
+         bitmap = SkiaSharpHelper.LoadBitmap(Route.ImageLocation, RouteTemplate.MAX_SIZE);
       }
 
       /// <summary>
@@ -238,6 +241,7 @@ namespace ClimbersHangout.UI.Common.Views {
                      inProgressHold = Route.GetNearestHoldOrNew(currentPoint);
                      inProgressHold.Center = currentPoint;
                      inProgressHold.Radius = radius;
+                     inProgressHold.Color = inProgressColor;
                      InvalidateSurface();
                   }
                   break;
@@ -250,6 +254,7 @@ namespace ClimbersHangout.UI.Common.Views {
                   //only if all fingers are released, the in progress hold
                   //is counted as completed
                   if (infos.Count() <= 1) {
+                     inProgressHold.Color = completedColor;
                      Route.AddHold(inProgressHold);
                      inProgressHold = null;
                   }
@@ -277,7 +282,7 @@ namespace ClimbersHangout.UI.Common.Views {
                (float)(infos[0].NewPoint.Y / scaleFactor + originPoint.Y));
             switch (type) {
                case SKTouchAction.Pressed:
-                  inProgressPath = new Path();
+                  inProgressPath = new Path() {Color = inProgressColor};
                   inProgressPath.AddPoint(currentPoint);
                   InvalidateSurface();
                   break;
@@ -286,6 +291,7 @@ namespace ClimbersHangout.UI.Common.Views {
                   InvalidateSurface();
                   break;
                case SKTouchAction.Released:
+                  inProgressPath.Color = completedColor;
                   Route.AddPath(inProgressPath);
                   inProgressPath = null;
                   InvalidateSurface();
@@ -376,11 +382,11 @@ namespace ClimbersHangout.UI.Common.Views {
 
       private void DrawPaths(SKCanvas canvas) {
          foreach (Path path in Route.Paths) {
-            canvas.DrawPath(path.ConvertToSKPath(originPoint, scaleFactor), SkiaSharpHelper.CompletedPaint);
+            SkiaSharpHelper.DrawPath(canvas, path, originPoint, scaleFactor);
          }
-
+         
          if (null != inProgressPath) {
-            canvas.DrawPath(inProgressPath.ConvertToSKPath(originPoint, scaleFactor), SkiaSharpHelper.InProgressPaint);
+            SkiaSharpHelper.DrawPath(canvas, inProgressPath, originPoint, scaleFactor);
          }
       }
 
@@ -407,21 +413,13 @@ namespace ClimbersHangout.UI.Common.Views {
       private void DrawHolds(SKCanvas canvas) {
          foreach (var hold in Route.Holds) {
             if (hold != inProgressHold) {
-               DrawHold(canvas, hold, SkiaSharpHelper.CompletedPaint);
+               SkiaSharpHelper.DrawHold(canvas, hold, originPoint, scaleFactor);
             }
          }
 
          if (null != inProgressHold) {
-            DrawHold(canvas, inProgressHold, SkiaSharpHelper.InProgressPaint);
+            SkiaSharpHelper.DrawHold(canvas, inProgressHold, originPoint, scaleFactor);
          }
-      }
-
-      private void DrawHold(SKCanvas canvas, Hold hold, SKPaint paint) {
-         canvas.DrawCircle(
-            (float)((hold.Center.X - originPoint.X) * scaleFactor),
-            (float)((hold.Center.Y - originPoint.Y) * scaleFactor),
-            (float)(hold.Radius * scaleFactor),
-            paint);
       }
 
       public enum Mode {

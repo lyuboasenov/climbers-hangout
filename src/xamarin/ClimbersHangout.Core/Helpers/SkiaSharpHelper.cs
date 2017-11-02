@@ -1,32 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using ClimbersHangout.Core.Models.Routes;
 using SkiaSharp;
 using Xamarin.Forms;
 using Path = ClimbersHangout.Core.Models.Routes.Path;
 
-namespace ClimbersHangout.UI.Common.Helpers {
-   static class SkiaSharpHelper {
+namespace ClimbersHangout.Core.Helpers {
+   public static class SkiaSharpHelper {
 
+      public static SKColor ToSkColor(this Color color) {
+         return new SKColor((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255), (byte)(color.A * 255));
+      }
 
-      public static readonly SKPaint CompletedPaint = new SKPaint {
-         Style = SKPaintStyle.Stroke,
-         Color = SKColors.White,
-         StrokeWidth = 10,
-         StrokeCap = SKStrokeCap.Round,
-         StrokeJoin = SKStrokeJoin.Round
-      };
-
-      public static readonly SKPaint InProgressPaint = new SKPaint {
-         Style = SKPaintStyle.Stroke,
-         Color = SKColors.Red,
-         StrokeWidth = 10,
-         StrokeCap = SKStrokeCap.Round,
-         StrokeJoin = SKStrokeJoin.Round
-      };
-
+      public static SKPaint GetPaint(SKColor color) {
+         return new SKPaint {
+            Style = SKPaintStyle.Stroke,
+            Color = color,
+            StrokeWidth = 10,
+            StrokeCap = SKStrokeCap.Round,
+            StrokeJoin = SKStrokeJoin.Round
+         };
+      }
 
       public static SKBitmap LoadBitmap(string location, double maxSize) {
          SKBitmap bitmap;
@@ -43,25 +37,36 @@ namespace ClimbersHangout.UI.Common.Helpers {
          return bitmap;
       }
 
-      public static SKBitmap Export(this Route route) {
-         var bitmap = LoadBitmap(route.ImageLocation, Route.MAX_SIZE);
+      public static SKBitmap Export(this RouteTemplate route) {
+         var bitmap = LoadBitmap(route.ImageLocation, RouteTemplate.MAX_SIZE);
          SKCanvas canvas = new SKCanvas(bitmap);
 
          //DrawHolds
          foreach (var hold in route.Holds) {
-            canvas.DrawCircle(
-               (float)hold.Center.X,
-               (float)hold.Center.Y,
-               (float)hold.Radius,
-               CompletedPaint);
+            DrawHold(canvas, hold);
          }
-
+         
          //DrawPaths
          foreach (Path path in route.Paths) {
-            canvas.DrawPath(path.ConvertToSKPath(), SkiaSharpHelper.CompletedPaint);
+            DrawPath(canvas, path);
          }
 
          return bitmap;
+      }
+
+      public static void DrawPath(SKCanvas canvas, Path path, Point? originPoint = null, double scaleFactor = 1) {
+         canvas.DrawPath(path.ConvertToSKPath(originPoint, scaleFactor), GetPaint(path.Color.ToSkColor()));
+      }
+
+      public static void DrawHold(SKCanvas canvas, Hold hold, Point? originPoint = null, double scaleFactor = 1) {
+         double offsetX = originPoint?.X ?? 0;
+         double offsetY = originPoint?.Y ?? 0;
+
+         canvas.DrawCircle(
+            (float)((hold.Center.X - offsetX) * scaleFactor),
+            (float)((hold.Center.Y - offsetY) * scaleFactor),
+            (float)(hold.Radius * scaleFactor),
+            GetPaint(hold.Color.ToSkColor()));
       }
 
       /// <summary>

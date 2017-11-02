@@ -9,7 +9,7 @@ using Xamarin.Forms;
 namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
    [AddINotifyPropertyChangedInterface]
    public class AddRoutePageModel : MultiPageModel, Okable, Cancelable {
-      private Route route;
+      private RouteTemplate route;
       private Command okCommand;
       private Command cancelCommand;
       private RouteDetailsPageModel detailsPageModel;
@@ -30,7 +30,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
 
       public override void Init(object initData) {
          base.Init(initData);
-         route = initData as Route;
+         route = initData as RouteTemplate;
          if (null == route) {
             throw new ArgumentNullException("Invalid route template supplied.");
          }
