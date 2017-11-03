@@ -8,7 +8,7 @@ namespace ClimbersHangout.Core.Helpers {
       /// taken from http://www.geodatasource.com/developers/c-sharp
       /// </summary>
       /// <returns></returns>
-      public static double Distance(GpsPosition pos1, GpsPosition pos2, DistanceUnit unit = DistanceUnit.Kilometers) {
+      public static double Distance(Position pos1, Position pos2, DistanceUnit unit = DistanceUnit.Kilometers) {
          double theta = pos1.Longitude - pos2.Longitude;
          double dist = Math.Sin(DegToRad(pos1.Latitude)) * Math.Sin(DegToRad(pos2.Latitude)) + Math.Cos(DegToRad(pos1.Latitude)) * Math.Cos(DegToRad(pos2.Latitude)) * Math.Cos(DegToRad(theta));
          dist = Math.Acos(dist);

@@ -10,7 +10,7 @@ namespace ClimbersHangout.Core.Models.Routes {
       public string Description { get; set; }
       public RouteType Type { get; set; }
       public Grade Grade { get; set; }
-      public GpsPosition Position { get; set; }
+      public Position Position { get; set; }
 
       public Route() {
          Id = Guid.NewGuid();

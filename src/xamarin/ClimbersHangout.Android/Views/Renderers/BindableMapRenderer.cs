@@ -1,4 +1,7 @@
-﻿using Android.Gms.Maps;
+﻿using System;
+using Android.Gms.Maps;
+using Android.Gms.Maps.Model;
+using Android.Locations;
 using ClimbersHangout.Android.Views.Renderers;
 using ClimbersHangout.UI.Common.Views;
 using Xamarin.Forms;
@@ -17,21 +20,40 @@ namespace ClimbersHangout.Android.Views.Renderers {
          base.OnMapReady(map);
          _map = map;
 
-         if (_map != null)
-            _map.MapClick += googleMap_MapClick;
+         if (_map != null) {
+            _map.MapLongClick += googleMap_MapClick;
+            //_map.CameraChange += googleMap_CameraChange;
+            _map.CameraMove += googleMap_CameraMove;
+
+         }
       }
 
       protected override void OnElementChanged(ElementChangedEventArgs<Map> e) {
-         if (_map != null)
-            _map.MapClick -= googleMap_MapClick;
+         if (_map != null) {
+            _map.MapLongClick -= googleMap_MapClick;
+            //_map.CameraChange -= googleMap_CameraChange;
+            _map.CameraMove += googleMap_CameraMove;
+         }
 
          base.OnElementChanged(e);
-         
-         if (Control != null)
+
+         if (Control != null) {
             ((MapView)Control).GetMapAsync(this);
+         }
       }
 
-      private void googleMap_MapClick(object sender, GoogleMap.MapClickEventArgs e) {
+      private void googleMap_CameraMove(object sender, EventArgs e) {
+         var latitude = _map.Projection.VisibleRegion.LatLngBounds.Center.Latitude;
+         var longitude = _map.Projection.VisibleRegion.LatLngBounds.Center.Longitude;
+         var latitudeDegrees = Math.Abs(_map.Projection.VisibleRegion.LatLngBounds.Southwest.Latitude -
+                               _map.Projection.VisibleRegion.LatLngBounds.Northeast.Latitude);
+         var longitudeDegrees = Math.Abs(_map.Projection.VisibleRegion.LatLngBounds.Southwest.Latitude -
+                               _map.Projection.VisibleRegion.LatLngBounds.Northeast.Latitude);
+
+         ((BindableMap)Element).OnVisibleRegionChanged(latitude, longitude, latitudeDegrees, longitudeDegrees);
+      }
+
+      private void googleMap_MapClick(object sender, GoogleMap.MapLongClickEventArgs e) {
          ((BindableMap)Element).OnTap(new Position(e.Point.Latitude, e.Point.Longitude));
       }
    }

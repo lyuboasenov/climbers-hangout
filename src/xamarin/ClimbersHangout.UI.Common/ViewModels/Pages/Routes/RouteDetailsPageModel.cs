@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using ClimbersHangout.Core.Models.Routes;
-using ClimbersHangout.UI.Common.Resources;
-using ClimbersHangout.UI.Common.Views;
-using FreshMvvm;
-using Plugin.Media.Abstractions;
 using PropertyChanged;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
-using Position = Plugin.Geolocator.Abstractions.Position;
+using Position = Xamarin.Forms.Maps.Position;
 
 namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
    [AddINotifyPropertyChangedInterface]
@@ -22,7 +16,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
       public string Description { get; set; }
       public ObservableCollection<Grade> GradeList { get; set; }
       public Grade SelectedGrade { get; set; }
-      public Xamarin.Forms.Maps.Position CurrentLocation { get; set; }
+      public Position SelectedLocation { get; set; }
       public MapSpan VisibleRegion { get; set; }
       public Command OkCommand {
          get { return okCommand ?? (okCommand = new Command(Ok, CanOk)); }
@@ -36,18 +30,19 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
          base.Init(initData);
          route = (Route) initData;
 
-         CurrentLocation = new Xamarin.Forms.Maps.Position(route.Position.Latitude, route.Position.Longitude);
-         VisibleRegion = MapSpan.FromCenterAndRadius(CurrentLocation, new Distance(100));
+         SelectedLocation = new Position(route.Position.Latitude, route.Position.Longitude);
+         VisibleRegion = MapSpan.FromCenterAndRadius(SelectedLocation, new Distance(100));
          GradeList = new ObservableCollection<Grade>(Grade.GetGradeList(route.Type));
       }
 
       private void OnCurrentLocationChanged() {
-         route.Position.Latitude = CurrentLocation.Latitude;
-         route.Position.Longitude = CurrentLocation.Longitude;
+         route.Position.Latitude = SelectedLocation.Latitude;
+         route.Position.Longitude = SelectedLocation.Longitude;
       }
 
       private void OnNameChanged() {
          route.Name = Name;
+         OkCommand.ChangeCanExecute();
       }
 
       private void OnDescriptionChanged() {
@@ -56,10 +51,11 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
 
       private void OnSelectedGradeChanged() {
          route.Grade = SelectedGrade;
+         OkCommand.ChangeCanExecute();
       }
       
       private bool CanOk() {
-         return true;
+         return !string.IsNullOrEmpty(Name) && SelectedGrade != null;
       }
 
       private void Ok() {

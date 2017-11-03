@@ -1,5 +1,6 @@
 ﻿using Acr.UserDialogs;
 using ClimbersHangout.UI.Common.ViewModels.Pages;
+using ClimbersHangout.UI.Common.ViewModels.Pages.Routes;
 using FreshMvvm;
 using Xamarin.Forms;
 
@@ -18,12 +19,13 @@ namespace ClimbersHangout.UI.Common {
 
          var masterDetailNav = new FreshMasterDetailNavigationContainer();
          masterDetailNav.Init("Menu");
+         masterDetailNav.AddPage<RoutesMapPageModel>("Routes");
          masterDetailNav.AddPage<TimerTrainingListPageModel>("Timed trainings");
          masterDetailNav.AddPage<TimerSetupPageModel>("Timer");
          masterDetailNav.AddPage<AboutPageModel>("About");
          MainPage = masterDetailNav;
 
-         MessagingCenter.Subscribe<Pages.TimerTrainingListPage>(this, "GoBackToMainPage", (m) => {
+         MessagingCenter.Subscribe<Pages.Routes.RoutesMapPage>(this, "GoBackToMainPage", (m) => {
             Device.BeginInvokeOnMainThread(() => {
                MainPage = masterDetailNav;
             });

@@ -49,7 +49,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages {
             var position = MediaHelper.GetImageGpsLocation(imageFile) ?? await GpsHelper.GetCurrentPosition(false);
             var routeTemplate = new RouteTemplate() {
                ImageLocation = imageFile.Path,
-               Position = new GpsPosition(position.Latitude, position.Longitude),
+               Position = new Position(position.Latitude, position.Longitude),
                Type = routeType
             };
 

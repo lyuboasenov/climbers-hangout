@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace ClimbersHangout.Core.Models.Routes {
-   public class GpsPosition {
+   public class Position {
       public double Latitude { get; set; }
       public double Longitude { get; set; }
 
-      public GpsPosition() { }
+      public Position() { }
 
-      public GpsPosition(double latitude, double longitude) {
+      public Position(double latitude, double longitude) {
          Latitude = latitude;
          Longitude = longitude;
       }

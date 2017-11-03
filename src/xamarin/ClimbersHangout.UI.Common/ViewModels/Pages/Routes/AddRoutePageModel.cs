@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ClimbersHangout.Core.Models.Routes;
+using ClimbersHangout.Core.Services;
 using ClimbersHangout.UI.Common.Resources;
 using PropertyChanged;
 using Xamarin.Forms;
@@ -49,7 +50,7 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
       }
 
       private void SaveRoute() {
-         
+         RouteService.SaveRoute(route);
       }
 
       private async void Cancel() {

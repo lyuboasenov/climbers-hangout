@@ -34,6 +34,9 @@
     <Compile Update="Pages\Routes\RouteDetailsPage.xaml.cs">
       <DependentUpon>RouteDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Pages\Routes\RoutesMapPage.xaml.cs">
+      <DependentUpon>RoutesMapPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Pages\TimerTrainingListPage.xaml.cs">
       <DependentUpon>TimerTrainingListPage.xaml</DependentUpon>
     </Compile>

@@ -32,8 +32,9 @@
             MapType="Hybrid"
             HasScrollEnabled="True" 
             HasZoomEnabled="True"
-            CurrentLocation="{Binding CurrentLocation, Mode=TwoWay}"
-            BindableVisibleRegion="{Binding VisibleRegion}"/>
+            SelectedLocation="{Binding SelectedLocation, Mode=TwoWay}"
+            BindableVisibleRegion="{Binding VisibleRegion}"
+            ShowSelectedLocation="True"/>
          <StackLayout
             Grid.Row="4"
             Orientation="Horizontal">
