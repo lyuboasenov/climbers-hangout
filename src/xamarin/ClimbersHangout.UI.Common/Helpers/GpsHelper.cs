@@ -14,10 +14,10 @@ namespace ClimbersHangout.UI.Common.Helpers {
          locator.DesiredAccuracy = 0;
 
          if (tryLastKnown) {
-            position = await locator.GetLastKnownPositionAsync();
+            position = await locator.GetLastKnownLocationAsync();
          }
 
-         if (null == position && await locator.GetIsGeolocationAvailableAsync() && await locator.GetIsGeolocationEnabledAsync()) {
+         if (null == position && locator.IsGeolocationAvailable && locator.IsGeolocationEnabled) {
             position = await locator.GetPositionAsync(TimeSpan.FromSeconds(20), null, true);
          }
 

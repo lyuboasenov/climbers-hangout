@@ -3,7 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ClimbersHangout.UI.Common.Pages;assembly=ClimbersHangout.UI.Common"
              xmlns:views="clr-namespace:ClimbersHangout.UI.Common.Views;assembly=ClimbersHangout.UI.Common"
+             xmlns:slideOverKit="clr-namespace:SlideOverKit;assembly=SlideOverKit"
+             xmlns:routes="clr-namespace:ClimbersHangout.Core.Models.Routes;assembly=ClimbersHangout.Core"
              x:Class="ClimbersHangout.UI.Common.Pages.Routes.RoutesMapPage">
+   <pages:BaseContentPage.SlideMenu>
+      <slideOverKit:SlideMenuView
+         IsFullScreen="False"
+         BackgroundViewColor="Transparent"
+         BackgroundColor="#C82630"
+         MenuOrientations="BottomToTop"
+         WidthRequest="50"
+         HeightRequest="250"
+         DraggerButtonHeight="50"
+         LeftMargin="100"
+      >
+         <StackLayout
+            Orientation="Vertical">
+            <views:FontIcon
+               Icon="Plus" 
+               Margin="20, 20, 0, 0"
+               HeightRequest="50" />
+            <views:FontIconButton 
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.Boulder}"
+               Icon="Apple" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.SportRoute}"
+               Icon="Anchor" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding AddRouteCommand}"
+               CommandParameter="{x:Static routes:RouteType.IndoorBoulder}"
+               Icon="Bomb" 
+               HeightRequest="50"/>
+            <views:FontIconButton
+               Command="{Binding TimerCommand}"
+               Icon="ClockO" 
+               HeightRequest="50"/>
+         </StackLayout>
+      </slideOverKit:SlideMenuView>
+   </pages:BaseContentPage.SlideMenu>
    <pages:BaseContentPage.Content>
       <views:BindableMap
          MapType="Hybrid"
