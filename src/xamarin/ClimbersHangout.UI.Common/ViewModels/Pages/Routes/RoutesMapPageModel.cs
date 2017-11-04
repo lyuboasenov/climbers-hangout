@@ -11,7 +11,16 @@ namespace ClimbersHangout.UI.Common.ViewModels.Pages.Routes {
       public Xamarin.Forms.Maps.Position SelectedLocation { get; set; }
       public MapSpan VisibleRegion { get; set; }
       public IList<Pin> PinList { get; set; }
-      
+
+      public RoutesMapPageModel() {
+         Init();
+      }
+
+      private async void Init() {
+         var position = await UI.Common.Helpers.GpsHelper.GetCurrentPositionAsync(true);
+         VisibleRegion = new MapSpan(new Xamarin.Forms.Maps.Position(position.Latitude, position.Longitude), .1, .1);
+      }
+
       private void OnVisibleRegionChanged() {
          UpdateRoutesOnMap();
       }

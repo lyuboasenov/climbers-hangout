@@ -7,7 +7,7 @@ using Plugin.Geolocator.Abstractions;
 
 namespace ClimbersHangout.UI.Common.Helpers {
    class GpsHelper {
-      public static async Task<Position> GetCurrentPosition(bool tryLastKnown) {
+      public static async Task<Position> GetCurrentPositionAsync(bool tryLastKnown) {
          Position position = null;
 
          var locator = CrossGeolocator.Current;

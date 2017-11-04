@@ -12,8 +12,7 @@ namespace ClimbersHangout.Core.Services {
       private static readonly string RoutesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Routes");
       private static readonly string RoutesCachePath = Path.Combine(RoutesPath, "Cache");
       private static readonly string RoutesUnsavedPath = Path.Combine(RoutesPath, "Unsaved");
-
-
+      
       public static IEnumerable<Route> GetRoutes(Position position, double distance, DistanceUnit unit = DistanceUnit.Kilometers) {
          var routesFiles = Directory.GetFiles(RoutesPath, "*.json");
          var routesList = new List<Route>();
